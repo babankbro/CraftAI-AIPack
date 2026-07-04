@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>อัปโหลดแผน · AIPACK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<meta name="view-transition" content="same-origin">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-brand"><span class="dot" style="width:26px;height:26px;border-radius:7px;background:var(--primary);display:inline-grid;place-items:center;color:#fff;">A</span> AIPACK · DigiNest</div>
+  <div class="header-user">อ.สมชาย (ครูผู้สอน) ▾ <span class="avatar">ส</span></div>
+</header>
+
+<main class="content-layout" style="max-width:820px;">
+  <div class="page-header">
+    <h2>อัปโหลดแผนการสอน</h2>
+    <button onclick="navigate('index.html')" class="btn btn-text btn-sm" style="margin-left:auto;">← กลับ</button>
+  </div>
+
+  <div class="card">
+    <div class="form-section">
+      <h3>ข้อมูลแผน (ส่วนที่ 1)</h3>
+      <div class="grid-2">
+        <div class="input-wrapper"><label>รายวิชา/เรื่องที่สอน</label><input type="text" placeholder="เช่น การอ่านเชิงวิเคราะห์"></div>
+        <div class="input-wrapper"><label>ระดับชั้น</label><select><option>ม.1</option><option selected>ม.2</option><option>ม.3</option></select></div>
+        <div class="input-wrapper"><label>วันที่จัดทำ</label><input type="date"></div>
+      </div>
+    </div>
+
+    <div class="dropzone">
+      <div class="drop-icon">📄</div>
+      <p>ลากไฟล์มาวาง หรือ <strong style="color:var(--primary);">เลือกไฟล์</strong></p>
+      <p class="drop-hint">PDF / DOCX · ไม่เกิน 20 MB (รองรับ PDF สแกน — มี OCR)</p>
+    </div>
+
+    <div class="version-select">
+      <label class="radio-label"><input type="radio" name="version" checked> ฉบับใหม่</label>
+      <label class="radio-label"><input type="radio" name="version"> ปรับปรุงจากเดิม (v2)</label>
+    </div>
+
+    <div class="action-bar-right">
+      <button class="btn btn-primary" onclick="navigate('cat_results.html')">ส่งเข้าประเมิน</button>
+    </div>
+  </div>
+
+  <h3 class="section-divider">── รายการอัปโหลดล่าสุด ──</h3>
+  <div class="results-list">
+    <div class="card result-item">
+      <div class="result-info">
+        <h3>เศรษฐศาสตร์เบื้องต้น <span class="badge tag-v1">v1</span></h3>
+        <p class="date">เพิ่งอัปโหลด (2 นาทีที่แล้ว)</p>
+      </div>
+      <div class="row" style="align-items:center;">
+        <span class="badge">กำลังสกัดข้อความ…</span>
+        <span class="badge tag-waiting" style="animation:pulse 1.5s infinite;">✨ AI กำลังวิเคราะห์</span>
+      </div>
+    </div>
+    <div class="card result-item" style="cursor:pointer;" onclick="navigate('cat_results.html')">
+      <div class="result-info">
+        <h3>การอ่านเชิงวิเคราะห์ <span class="badge tag-v1">v1</span></h3>
+        <p class="date">28 มิ.ย. 2569</p>
+      </div>
+      <span class="badge tag-waiting">● รอ CAM ประเมิน</span>
+    </div>
+  </div>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

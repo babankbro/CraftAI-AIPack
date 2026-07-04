@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ผลประเมินของฉัน · AIPACK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<meta name="view-transition" content="same-origin">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-brand"><span class="dot" style="width:26px;height:26px;border-radius:7px;background:var(--primary);display:inline-grid;place-items:center;color:#fff;">A</span> AIPACK · DigiNest</div>
+  <div class="header-user">อ.สมชาย (ครูผู้สอน) ▾ <span class="avatar">ส</span></div>
+</header>
+
+<main class="content-layout" style="max-width:820px;">
+  <div class="page-header">
+    <h2>ผลประเมินของฉัน</h2>
+    <button onclick="navigate('cat_upload.html')" class="btn btn-text btn-sm" style="margin-left:auto;">← กลับ</button>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap;">
+      <div>
+        <h3 style="margin:0 0 4px; font-size:18px;">พลังงานทดแทนในชีวิตประจำวัน</h3>
+        <p class="date">ม.2 · เวอร์ชัน v2 · ประเมินเมื่อ 20 มิ.ย. 2569</p>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-family:'Prompt'; font-size:26px; color:var(--ink);">11<span class="muted" style="font-size:16px;">/20</span></div>
+        <span class="level level-2">🟡 บ่มเพาะทักษะ</span>
+      </div>
+    </div>
+
+    <div class="warn-bar" style="margin:16px 0;">⚠️ ห้ามนำแผนไปใช้สอนทันที — โปรดนัดพบครูพี่เลี้ยง (Mentor-Mentee) เพื่อเติมเครื่องมือก่อน</div>
+
+    <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin:10px 0 18px; text-align:center;">
+      <div><div class="muted" style="font-size:12px;">C1</div><span class="level level-3">3</span></div>
+      <div><div class="muted" style="font-size:12px;">C2</div><span class="level level-2">2</span></div>
+      <div><div class="muted" style="font-size:12px;">C3</div><span class="level level-2">2</span></div>
+      <div><div class="muted" style="font-size:12px;">C4</div><span class="level level-1">1</span></div>
+      <div><div class="muted" style="font-size:12px;">C5</div><span class="level level-2">3</span></div>
+    </div>
+
+    <div style="background:#F6F7FA; border-radius:var(--r-md); padding:14px 16px; margin-bottom:14px;">
+      <p style="margin:0 0 6px; font-weight:600; color:var(--success);">✅ จุดเด่น</p>
+      <p class="muted" style="margin:0 0 12px; font-size:14px;">เชื่อมโยงตัวชี้วัดกับเป้าหมายการอ่านชัดเจน (C1) และมีเครื่องมือวัดผลแนบมา</p>
+      <p style="margin:0 0 6px; font-weight:600; color:var(--primary);">🌱 จุดเติมเต็ม</p>
+      <p class="muted" style="margin:0; font-size:14px;">ขอให้เพิ่มชุดคำสั่ง (Prompt) ที่ใช้ควบคู่กับแพลตฟอร์ม ระบุลงในหน้ารายการสื่อ ข้อ 4.2</p>
+    </div>
+
+    <div class="row" style="flex-wrap:wrap;">
+      <button class="btn btn-primary">⬇ ดาวน์โหลดรายงาน PDF</button>
+      <button class="btn btn-outline" onclick="navigate('cat_upload.html')">อัปโหลดฉบับปรับปรุง</button>
+    </div>
+  </div>
+
+  <div class="card queue-item done">
+    <div class="q-main">
+      <h3>การอ่านเชิงวิเคราะห์ <span class="badge tag-v1">v1</span></h3>
+      <p class="date">ส่งเมื่อ 28 มิ.ย. 2569</p>
+    </div>
+    <span class="badge tag-waiting">⏳ รอครูพี่เลี้ยงตรวจ</span>
+  </div>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

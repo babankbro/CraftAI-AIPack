@@ -1,0 +1,19 @@
+services:
+  postgres:
+    restart: always
+    ports: [] # ไม่เปิดพอร์ตออกนอกในโปรดักชัน
+
+  minio:
+    restart: always
+    ports:
+      - "9000:9000" # เปิดเฉพาะ API; ปิด console (9001) หรือคุมด้วย firewall
+
+  app:
+    build:
+      context: .
+      target: runner
+    command: ["node", "server.js"]
+    restart: always
+    volumes: [] # ไม่ mount source ใน prod (ใช้ standalone build)
+    ports:
+      - "3000:3000"

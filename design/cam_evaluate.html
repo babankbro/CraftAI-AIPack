@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ตรวจประเมินแผน · AIPACK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<meta name="view-transition" content="same-origin">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-brand"><span class="dot" style="width:26px;height:26px;border-radius:7px;background:var(--primary);display:inline-grid;place-items:center;color:#fff;">A</span> AIPACK · DigiNest <span class="role-badge">CAM</span></div>
+  <div class="header-user">ตรวจแผน: อ.สมชาย · การอ่านเชิงวิเคราะห์ v1</div>
+</header>
+
+<main class="content-layout" style="max-width:1240px;">
+  <div class="page-header flex-between">
+    <span class="badge-pill">หน้าตรวจประเมิน · Evidence-first</span>
+    <div class="ai-tag">เช็กลิสต์: AI ✓ · Prompt ✗ · Socratic ✓ · Rubric ✗ · Thinking Trails ✓ (3/5)</div>
+  </div>
+
+  <div class="split">
+    <!-- ซ้าย: ตัวแผน -->
+    <div class="pdf-pane">
+      <div class="head"><span>แผนการสอน (PDF)</span><span>◀ หน้า 2 / 12 ▶ &nbsp;🔍</span></div>
+      <div class="page">
+        <p><b>แผนการจัดการเรียนรู้ · การอ่านเชิงวิเคราะห์</b></p>
+        <p>มาตรฐาน ท 1.1 ตัวชี้วัด ม.2/3 … <span class="hl">เชื่อมโยงเป้าหมายการอ่าน (RL) เข้ากับการสแกนหาข้อมูลในบทความ</span> …</p>
+        <p>ขั้นนำ: ครูใช้คำถาม <span class="hl">"เพราะเหตุใดผู้เขียนจึงเลือกใช้ข้อมูลชุดนี้"</span> เพื่อกระตุ้นการคิด …</p>
+        <p>ขั้นสอน: นักเรียนอ่านบทความคู่ขัดแย้ง แล้วอภิปราย …</p>
+        <p class="muted" style="font-size:12px; margin-top:24px;">— ต่อหน้า 3 —</p>
+      </div>
+    </div>
+
+    <!-- ขวา: เกณฑ์ทีละข้อ -->
+    <div>
+      <details class="crit" open>
+        <summary><span><b>C1</b> ความสอดคล้องกับมาตรฐาน</span><span class="ai-tag">✨ AI เสนอ: ระดับ 3</span></summary>
+        <div class="body">
+          <div class="ai-box"><b>✨ AI เสนอ ระดับ 3</b> · ความเชื่อมั่น: <b style="color:var(--success)">สูง</b><br>
+            เหตุผล: พบการเชื่อม CK ↔ RL ชัดเจน แต่ยังไม่เชื่อมกับการใช้ AI (AIK)
+            <div style="margin-top:8px;"><a href="#" style="color:var(--primary); font-size:13px; text-decoration:none;">🔎 ดูหลักฐาน (หน้า 2) →</a></div>
+          </div>
+          <p style="font-weight:600; margin:0 0 8px;">CAM ตัดสิน</p>
+          <div class="score-selector">
+            <label class="score-btn"><input type="radio" name="c1">4</label>
+            <label class="score-btn selected"><input type="radio" name="c1" checked>3</label>
+            <label class="score-btn"><input type="radio" name="c1">2</label>
+            <label class="score-btn"><input type="radio" name="c1">1</label>
+          </div>
+          <div class="field" style="margin-top:12px; margin-bottom:0;"><textarea rows="2" placeholder="บันทึกร่องรอยหลักฐานเพิ่มเติม…"></textarea></div>
+        </div>
+      </details>
+
+      <details class="crit">
+        <summary><span><b>C2</b> จุดประสงค์การเรียนรู้ (K-P-A)</span><span class="ai-tag">✨ ระดับ 2</span></summary>
+        <div class="body"><div class="ai-box"><b>✨ AI เสนอ ระดับ 2</b> · ความเชื่อมั่น: กลาง<br>ใช้คำกริยาวัดผลยาก ("เข้าใจ") ไม่เจาะจง RL/CT</div>
+          <div class="score-selector"><label class="score-btn"><input type="radio" name="c2">4</label><label class="score-btn"><input type="radio" name="c2">3</label><label class="score-btn selected"><input type="radio" name="c2" checked>2</label><label class="score-btn"><input type="radio" name="c2">1</label></div>
+        </div>
+      </details>
+
+      <details class="crit">
+        <summary><span><b>C3</b> กระบวนการจัดการเรียนรู้</span><span class="ai-tag">✨ ระดับ 3</span></summary>
+        <div class="body"><div class="ai-box"><b>✨ AI เสนอ ระดับ 3</b> · ความเชื่อมั่น: สูง<br>มีคำถาม Socratic + Active Learning แต่ไม่ระบุวิธีสร้างบรรยากาศ PERMA</div>
+          <div class="score-selector"><label class="score-btn"><input type="radio" name="c3">4</label><label class="score-btn selected"><input type="radio" name="c3" checked>3</label><label class="score-btn"><input type="radio" name="c3">2</label><label class="score-btn"><input type="radio" name="c3">1</label></div>
+        </div>
+      </details>
+
+      <details class="crit">
+        <summary><span><b>C4</b> การใช้สื่อและเทคโนโลยี</span><span class="ai-tag">✨ ไม่พบหลักฐาน</span></summary>
+        <div class="body"><div class="ai-box none"><b>⚠️ AI: ไม่พบหลักฐาน</b> → เสนอระดับ 1<br>ไม่พบการแนบ Prompt หรือขั้นตอน Fact-check ในแผน</div>
+          <div class="score-selector"><label class="score-btn"><input type="radio" name="c4">4</label><label class="score-btn"><input type="radio" name="c4">3</label><label class="score-btn"><input type="radio" name="c4">2</label><label class="score-btn selected"><input type="radio" name="c4" checked>1</label></div>
+        </div>
+      </details>
+
+      <details class="crit">
+        <summary><span><b>C5</b> การประเมินผล</span><span class="ai-tag">✨ ระดับ 3</span></summary>
+        <div class="body"><div class="ai-box"><b>✨ AI เสนอ ระดับ 3</b> · ความเชื่อมั่น: กลาง<br>มีเครื่องมือวัด RL/CT แต่เป็น Holistic Rubric กว้าง</div>
+          <div class="score-selector"><label class="score-btn"><input type="radio" name="c5">4</label><label class="score-btn selected"><input type="radio" name="c5" checked>3</label><label class="score-btn"><input type="radio" name="c5">2</label><label class="score-btn"><input type="radio" name="c5">1</label></div>
+        </div>
+      </details>
+
+      <div class="card" style="display:flex; justify-content:space-between; align-items:center; margin-top:16px;">
+        <div><span class="muted" style="font-size:13px;">รวมชั่วคราว</span><div style="font-family:'Prompt'; font-size:22px; color:var(--ink);">12<span class="muted" style="font-size:15px;">/20</span></div></div>
+        <button class="btn btn-primary" onclick="navigate('cam_summary.html')">ไปหน้าสรุป →</button>
+      </div>
+      <p class="muted" style="font-size:12px; text-align:center; margin-top:8px;">ตรวจครบ 5/5 องค์ประกอบ · การแก้คะแนนจาก AI จะถูกบันทึก audit</p>
+    </div>
+  </div>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

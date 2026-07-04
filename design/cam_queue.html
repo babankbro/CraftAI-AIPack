@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>คิวรอตรวจ · AIPACK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<meta name="view-transition" content="same-origin">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-brand"><span class="dot" style="width:26px;height:26px;border-radius:7px;background:var(--primary);display:inline-grid;place-items:center;color:#fff;">A</span> AIPACK · DigiNest <span class="role-badge">CAM</span></div>
+  <div class="header-user">อ.มานี (ครูพี่เลี้ยง) ▾ <span class="avatar">ม</span></div>
+</header>
+
+<main class="content-layout" style="max-width:900px;">
+  <div class="page-header flex-between">
+    <h2>คิวรอตรวจ (3)</h2>
+    <div class="filters">
+      <select><option>ทั้งหมด</option></select>
+      <select><option>เรียงล่าสุด</option></select>
+      <button onclick="navigate('index.html')" class="btn btn-text btn-sm">← กลับ</button>
+    </div>
+  </div>
+
+  <div class="queue-list">
+    <div class="card queue-item">
+      <div class="q-main">
+        <h3>อ.สมชาย · การอ่านเชิงวิเคราะห์ · v1</h3>
+        <div class="ai-suggestion">
+          <span class="ai-badge">✨ AI เสนอ</span>
+          <span class="score">~14/20</span>
+          <span class="confidence high">ความเชื่อมั่นเฉลี่ย สูง</span>
+        </div>
+        <div class="checklist">เช็กลิสต์หลักฐาน: <span class="dots">●●●●○</span> (4/5) · ขาด Analytic Rubric</div>
+      </div>
+      <div class="q-action"><button class="btn btn-primary" onclick="navigate('cam_evaluate.html')">ตรวจ →</button></div>
+    </div>
+
+    <div class="card queue-item">
+      <div class="q-main">
+        <h3>อ.ปิติ · พลังงานทดแทน · v2</h3>
+        <div class="ai-suggestion">
+          <span class="ai-badge">✨ AI เสนอ</span>
+          <span class="score">~10/20</span>
+          <span class="confidence medium">ความเชื่อมั่นเฉลี่ย กลาง</span>
+        </div>
+        <div class="checklist">เช็กลิสต์หลักฐาน: <span class="dots">●●○○○</span> (2/5)</div>
+      </div>
+      <div class="q-action"><button class="btn btn-primary" onclick="navigate('cam_evaluate.html')">ตรวจ →</button></div>
+    </div>
+  </div>
+
+  <h3 class="section-divider">── ตรวจแล้ว ──</h3>
+  <div class="queue-list">
+    <div class="card queue-item done">
+      <div class="q-main"><h3>อ.สุดา · เศรษฐศาสตร์ · v1</h3></div>
+      <div class="q-action"><span class="score-final">16/20 ✓</span></div>
+    </div>
+  </div>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

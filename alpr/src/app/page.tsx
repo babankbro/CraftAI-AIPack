@@ -1,0 +1,11 @@
+import { redirect } from "next/navigation";
+import { auth } from "@/auth";
+
+export default async function Home() {
+  const session = await auth();
+
+  if (!session?.user) redirect("/login");
+  if (session.user.status !== "active") redirect("/pending-role");
+  if (session.user.role === "cam") redirect("/cam/queue");
+  redirect("/cat/upload");
+}

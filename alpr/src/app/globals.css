@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+/* ธีม ALPR — Light & Airy ตาม DigiNest LMS (craftai.ksu.ac.th/lms) */
+:root {
+  --bg-top: #f3efe6;
+  --bg-bottom: #eaf1f7;
+  --card: #ffffff;
+  --input-bg: #faf8f2;
+
+  --primary: #455ca1;
+  --primary-hover: #3b4e8c;
+  --primary-soft: #edf0f8;
+
+  --ink: #1f2433;
+  --text: #2d3243;
+  --muted: #6b7280;
+  --border: #e4e7ee;
+  --border-soft: #eef0f4;
+
+  --success: #2e9e6b;
+  --amber: #d9932b;
+  --danger: #e0531f;
+
+  --r-md: 16px;
+  --r-lg: 20px;
+  --r-xl: 24px;
+  --shadow-md: 0 2px 6px rgba(37, 45, 67, 0.05), 0 12px 28px rgba(37, 45, 67, 0.07);
+  --shadow-lg: 0 4px 10px rgba(37, 45, 67, 0.06), 0 30px 60px rgba(37, 45, 67, 0.1);
+}
+
+@theme inline {
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-success: var(--success);
+  --color-amber: var(--amber);
+  --color-danger: var(--danger);
+  --font-heading: var(--font-prompt);
+  --font-body: var(--font-ibm-plex-thai);
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  color: var(--text);
+  font-family: var(--font-ibm-plex-thai), "IBM Plex Sans Thai", system-ui, sans-serif;
+  background: linear-gradient(180deg, var(--bg-top) 0%, #f6f5f0 32%, var(--bg-bottom) 100%);
+  background-attachment: fixed;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-prompt), "Prompt", "IBM Plex Sans Thai", sans-serif;
+  color: var(--ink);
+}

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIPACK - ระบบตรวจประเมินแผนการสอน</title>
+    <meta name="description" content="ระบบตรวจประเมินแผนการสอน AIPACK (ALPR) โครงการพัฒนา RL & CT จ.กาฬสินธุ์">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+/* Design System Variables */
+:root {
+    /* Colors */
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --bg-dark: #0f172a;
+    --bg-card: rgba(30, 41, 59, 0.7);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --ai-draft: rgba(148, 163, 184, 0.2);
+    
+    /* Status Colors */
+    --status-4: #22c55e; /* Green */
+    --status-3: #3b82f6; /* Blue */
+    --status-2: #eab308; /* Yellow */
+    --status-1: #ef4444; /* Red */
+    --warning: #f59e0b;
+    
+    /* Layout */
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-squircle: 20px; /* approximation */
+    --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans Thai', 'Inter', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Dynamic Mesh Gradient Background */
+.bg-mesh {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: -1;
+    overflow: hidden;
+    background: #0f172a;
+}
+.blob {
+    position: absolute;
+    filter: blur(80px);
+    border-radius: 50%;
+    opacity: 0.6;
+    animation: float 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+}
+.blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: #3b82f6; }
+.blob-2 { bottom: -20%; right: -10%; width: 60vw; height: 60vw; background: #6366f1; animation-delay: -5s; }
+.blob-3 { top: 40%; left: 40%; width: 40vw; height: 40vw; background: #8b5cf6; animation-delay: -10s; }
+
+@keyframes float {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(5%, 10%) scale(1.1); }
+}
+
+/* Glassmorphism Components */
+.glass-card, .glass-panel {
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.glass-card {
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+}
+
+.glass-panel {
+    border-radius: var(--radius-md);
+    padding: 1rem 1.5rem;
+}
+
+/* Typography */
+h1, h2, h3, h4 { font-weight: 600; line-height: 1.3; }
+p { line-height: 1.5; }
+.subtitle { color: var(--text-muted); font-size: 1.1rem; }
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+    font-size: 1rem;
+}
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4); }
+.btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; }
+.btn-outline:hover { background: rgba(255,255,255,0.1); }
+.btn-text { background: transparent; color: var(--text-muted); padding: 0.5rem; }
+.btn-text:hover { color: white; }
+.btn-block { width: 100%; }
+.btn-sm { padding: 0.4rem 0.8rem; font-size: 0.875rem; }
+.btn-lg { padding: 1rem 2rem; font-size: 1.125rem; }
+
+/* Inputs & Forms */
+.input-wrapper { margin-bottom: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem; }
+label { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; }
+input[type="text"], input[type="password"], input[type="date"], select, textarea {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 1rem;
+    color: white;
+    font-family: inherit;
+    transition: var(--transition);
+    width: 100%;
+}
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: rgba(15, 23, 42, 0.8);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+/* SPA Screen Management */
+.screen { display: none; opacity: 0; animation: fadeIn 0.4s ease forwards; }
+.screen.active { display: block; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Layout Utilities */
+.content-layout { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.mt-4 { margin-top: 1rem; }
+.mt-6 { margin-top: 1.5rem; }
+
+/* Screen 1: Login */
+.login-card { max-width: 400px; margin: 10vh auto; text-align: center; }
+.logo-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+.login-card h1 { font-size: 1.8rem; margin-bottom: 0.25rem; }
+.project-desc { font-size: 0.85rem; color: var(--text-muted); margin: 0.5rem 0 2rem; }
+.form-group { text-align: left; }
+.hint { font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: 1rem; }
+
+.demo-links { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); }
+.demo-links p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem; }
+.demo-links .btn-group { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+
+/* Header */
+.app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; max-width: 1200px; margin: 1rem auto 2rem; }
+.header-brand { font-weight: 600; font-size: 1.1rem; }
+
+/* Screen 2: Upload */
+.upload-container { max-width: 700px; margin: 0 auto; }
+.dropzone { border: 2px dashed rgba(255,255,255,0.2); border-radius: var(--radius-md); padding: 3rem 2rem; text-align: center; margin: 2rem 0; background: rgba(0,0,0,0.1); cursor: pointer; transition: var(--transition); }
+.dropzone:hover { border-color: var(--primary); background: rgba(37,99,235,0.05); }
+.drop-icon { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.8; }
+.drop-hint { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; }
+.radio-label { display: inline-flex; align-items: center; gap: 0.5rem; margin-right: 1.5rem; cursor: pointer; }
+.action-bar-right { display: flex; justify-content: flex-end; margin-top: 2rem; }
+
+/* Badges */
+.badge { padding: 0.2rem 0.6rem; border-radius: 99px; font-size: 0.75rem; font-weight: 600; }
+.tag-v1 { background: rgba(255,255,255,0.1); }
+.tag-v2 { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+.tag-waiting { background: rgba(234, 179, 8, 0.2); color: #facc15; }
+.tag-done { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+.level-badge { padding: 0.3rem 0.8rem; border-radius: 99px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.4rem; }
+.level-2 { background: rgba(234, 179, 8, 0.15); color: #fde047; }
+.level-3 { background: rgba(59, 130, 246, 0.15); color: #93c5fd; }
+.role-badge { font-size: 0.7rem; background: var(--primary); padding: 0.1rem 0.4rem; border-radius: 4px; margin-left: 0.5rem; }
+
+/* Results List */
+.result-item { margin-bottom: 1rem; transition: var(--transition); }
+.result-item:not(.expanded) { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+.result-item:not(.expanded):hover { transform: translateX(4px); border-color: rgba(255,255,255,0.2); }
+.result-summary { display: flex; justify-content: space-between; align-items: center; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 1.5rem; }
+.score-bar-container { display: flex; flex-direction: column; gap: 0.4rem; width: 150px; }
+.score-text { font-size: 0.85rem; font-weight: 600; }
+.progress-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 99px; overflow: hidden; }
+.progress-bar .fill { height: 100%; border-radius: 99px; }
+.fill.blue { background: var(--status-3); }
+
+/* Alerts */
+.alert { padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1.5rem; font-weight: 500; }
+.alert.warning { background: rgba(245, 158, 11, 0.15); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+/* Feedback Grid */
+.feedback-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+.feedback-box h4 { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+.feedback-box p { font-size: 0.95rem; }
+.action-bar { display: flex; gap: 1rem; }
+
+/* CAM Queue */
+.queue-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 1.5rem; }
+.ai-suggestion { display: flex; gap: 0.75rem; align-items: center; margin: 0.75rem 0; }
+.ai-badge { background: var(--ai-draft); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; }
+.score { font-weight: 600; }
+.confidence { font-size: 0.85rem; }
+.confidence.high { color: var(--status-4); }
+.confidence.medium { color: var(--status-2); }
+.checklist { font-size: 0.9rem; color: var(--text-muted); }
+.checklist .dots { letter-spacing: 2px; color: white; }
+.section-divider { text-align: center; color: var(--text-muted); font-size: 0.9rem; margin: 2rem 0; font-weight: 400; }
+.queue-item.done { opacity: 0.6; }
+.score-final { font-size: 1.25rem; font-weight: 600; color: var(--status-4); }
+
+/* CAM Evaluate (Split Layout) */
+.full-height-screen { height: 100vh; display: flex; flex-direction: column; }
+.tight-header { margin: 1rem; }
+.split-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; flex: 1; padding: 0 1rem 1rem; min-height: 0; }
+.pane { display: flex; flex-direction: column; overflow-y: auto; }
+.pane-header { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; font-weight: 500; }
+
+.pdf-mockup { flex: 1; background: #e2e8f0; border-radius: var(--radius-sm); color: #0f172a; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+.pdf-page { padding: 2rem; flex: 1; overflow-y: auto; font-family: serif; }
+.pdf-page h2 { font-family: sans-serif; margin-bottom: 1rem; }
+.pdf-page .highlight { background: rgba(250, 204, 21, 0.4); padding: 0.2rem; border-radius: 4px; }
+.pdf-controls { background: white; padding: 0.5rem 1rem; display: flex; justify-content: center; align-items: center; gap: 1rem; border-top: 1px solid #cbd5e1; font-size: 0.9rem; }
+.btn-icon { background: #f1f5f9; border: none; padding: 0.4rem; border-radius: 4px; cursor: pointer; }
+
+.evidence-checklist { margin-top: 1rem; background: rgba(0,0,0,0.2); padding: 1rem; border-radius: var(--radius-sm); font-size: 0.9rem; display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.chk { padding: 0.2rem 0.5rem; border-radius: 4px; }
+.chk.yes { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+.chk.no { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+.criteria-list { display: flex; flex-direction: column; gap: 1rem; padding-bottom: 80px; }
+.criteria-card { padding: 1.5rem; }
+.criteria-card.collapsed { padding: 1rem 1.5rem; cursor: pointer; opacity: 0.7; transition: var(--transition); }
+.criteria-card.collapsed:hover { opacity: 1; background: rgba(30, 41, 59, 0.9); }
+.crit-header { margin-bottom: 1rem; }
+.ai-box { background: var(--ai-draft); padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1.5rem; border-left: 4px solid var(--text-muted); }
+.ai-top { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+.reason { font-size: 0.95rem; line-height: 1.5; }
+.btn-link { background: none; border: none; color: var(--primary); cursor: pointer; text-decoration: underline; font-family: inherit; }
+
+.cam-box h4 { margin-bottom: 1rem; color: white; }
+.score-selector { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+.score-btn { flex: 1; text-align: center; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); padding: 0.75rem; border-radius: var(--radius-sm); cursor: pointer; transition: var(--transition); position: relative; }
+.score-btn input { position: absolute; opacity: 0; }
+.score-btn:hover { background: rgba(255,255,255,0.05); }
+.score-btn.selected { background: var(--primary); border-color: var(--primary); font-weight: 600; box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+
+.eval-footer { position: fixed; bottom: 1rem; right: 1rem; width: calc(50% - 1.5rem); display: flex; justify-content: space-between; align-items: center; z-index: 10; }
+
+/* CAM Summary */
+.summary-card { max-width: 800px; margin: 0 auto; }
+.final-score { font-size: 2rem; font-weight: 700; color: var(--status-3); }
+.score-breakdown { display: flex; gap: 1.5rem; margin: 1.5rem 0; font-size: 1.1rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.level-box { padding: 1.5rem; border-radius: var(--radius-sm); }
+.level-box h3 { margin-bottom: 0.5rem; }
+.signature-section { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.15); padding: 1.5rem; border-radius: var(--radius-sm); }
+.sig-info p { color: var(--text-muted); margin-bottom: 0.25rem; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .split-layout { grid-template-columns: 1fr; }
+    .eval-footer { width: calc(100% - 2rem); }
+}
+
+/* Google Login Button */
+.btn-google {
+    background-color: white;
+    color: #3c4043;
+    font-weight: 500;
+    gap: 0.75rem;
+    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.30), 0 1px 3px 1px rgba(60,64,67,0.15);
+}
+.btn-google:hover {
+    background-color: #f8f9fa;
+    box-shadow: 0 1px 3px 0 rgba(60,64,67,0.30), 0 4px 8px 3px rgba(60,64,67,0.15);
+    transform: translateY(0);
+}
+.google-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+/* Pulse animation for AI waiting badge */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+    </style>
+    <meta name="view-transition" content="same-origin">
+</head>
+<body>
+    <!-- Dynamic Background -->
+    <div class="bg-mesh">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- App Container -->
+    <main id="app-container">
+        <section id="screen-cat-upload" class="screen">
+            <header class="app-header glass-panel">
+                <div class="header-brand">✨ AIPACK</div>
+                <div class="header-user">CAT: อ.สมชาย ▾</div>
+            </header>
+            
+            <div class="content-layout">
+                <div class="page-header">
+                    <h2>อัปโหลดแผนการสอน</h2>
+                    <button onclick="navigate('index.html')" class="btn btn-text btn-sm">← กลับ</button>
+                </div>
+                
+                <div class="glass-card upload-container">
+                    <div class="form-section">
+                        <h3>ข้อมูลแผน (ส่วนที่ 1)</h3>
+                        <div class="grid-2">
+                            <div class="input-wrapper">
+                                <label>รายวิชา/เรื่องที่สอน</label>
+                                <input type="text" placeholder="เช่น การอ่านเชิงวิเคราะห์">
+                            </div>
+                            <div class="input-wrapper">
+                                <label>ระดับชั้น</label>
+                                <select>
+                                    <option>ม.1</option><option>ม.2</option><option>ม.3</option>
+                                </select>
+                            </div>
+                            <div class="input-wrapper">
+                                <label>วันที่จัดทำ</label>
+                                <input type="date">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dropzone">
+                        <div class="drop-icon">📄</div>
+                        <p>ลากไฟล์มาวาง หรือ <strong>เลือกไฟล์</strong></p>
+                        <p class="drop-hint">PDF / DOCX · ไม่เกิน 20 MB (รองรับ PDF สแกน — มี OCR)</p>
+                    </div>
+                    
+                    <div class="version-select">
+                        <label class="radio-label">
+                            <input type="radio" name="version" checked> ฉบับใหม่
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="version"> ปรับปรุงจากเดิม (v2)
+                        </label>
+                    </div>
+                    
+                    <div class="action-bar-right">
+                        <button class="btn btn-primary" onclick="navigate('cat_results.html')">ส่งเข้าประเมิน</button>
+                    </div>
+                </div>
+                
+                <!-- Upload Queue / History Section -->
+                <h3 class="section-divider">── รายการอัปโหลดล่าสุด (Upload Queue) ──</h3>
+                
+                <div class="results-list">
+                    <!-- Queue Item 1: Analyzing -->
+                    <div class="glass-card result-item">
+                        <div class="result-info">
+                            <h3>เศรษฐศาสตร์เบื้องต้น <span class="badge tag-v1">v1</span></h3>
+                            <p class="date">เพิ่งอัปโหลด (2 นาทีที่แล้ว)</p>
+                        </div>
+                        <div class="result-status" style="display: flex; gap: 1rem; align-items: center;">
+                            <span class="badge" style="background: rgba(255,255,255,0.1);">กำลังสกัดข้อความ...</span>
+                            <span class="badge tag-waiting" style="animation: pulse 1.5s infinite;">✨ AI กำลังวิเคราะห์</span>
+                        </div>
+                    </div>
+
+                    <!-- Queue Item 2: Waiting for CAM -->
+                    <div class="glass-card result-item" onclick="navigate('cat_results.html')">
+                        <div class="result-info">
+                            <h3>การอ่านเชิงวิเคราะห์ <span class="badge tag-v1">v1</span></h3>
+                            <p class="date">28 มิ.ย.</p>
+                        </div>
+                        <div class="result-status">
+                            <span class="badge tag-waiting">● รอ CAM ประเมิน</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Score Selector Logic for Evaluation Screen
+    const scoreBtns = document.querySelectorAll('.score-btn');
+    
+    scoreBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            const group = this.closest('.score-selector');
+            group.querySelectorAll('.score-btn').forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+            const radio = this.querySelector('input[type="radio"]');
+            if(radio) radio.checked = true;
+        });
+    });
+
+    // Mock Google Login
+    const btnGoogleLogin = document.getElementById('btn-google-login');
+    if(btnGoogleLogin) {
+        btnGoogleLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Simulate Google OAuth and Role determination
+            const role = prompt("จำลองการล็อกอิน (Mock Login)\nกรุณาพิมพ์ 'CAT' เพื่อเข้าสู่หน้าอัปโหลด หรือ 'CAM' เพื่อเข้าหน้าตรวจแผน:", "CAT");
+            
+            if (role) {
+                if (role.toUpperCase() === 'CAM') {
+                    navigate('cam_queue.html');
+                } else {
+                    navigate('cat_upload.html');
+                }
+            }
+        });
+    }
+});
+
+function navigate(url) {
+    if (document.startViewTransition) {
+        document.startViewTransition(() => {
+            window.location.href = url;
+        });
+    } else {
+        window.location.href = url;
+    }
+}
+
+    </script>
+</body>
+</html>
