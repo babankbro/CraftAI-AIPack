@@ -45,11 +45,14 @@ services:
       exit 0
       "
 
+  # ค่าเริ่มต้นของ app เป็นแบบ prod-safe (target: runner, ไม่ mount source) —
+  # docker-compose.override.yml (auto-load เฉพาะตอนไม่ระบุ -f) จะสลับเป็นโหมด dev ให้
+  # ส่วน docker-compose.prod.yml ใช้ -f ชัดเจนจึงไม่โดน override.yml ปนด้วย (ดู M8 note)
   app:
     build:
       context: .
-      target: dev
-    command: sh -c "npx prisma migrate deploy && npm run dev"
+      target: runner
+    command: ["node", "server.js"]
     env_file: .env
     ports:
       - "3000:3000"
@@ -58,10 +61,12 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
-    volumes:
-      - ./:/app
-      - /app/node_modules
-      - /app/.next
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000${BASE_PATH:-/aipack}/login || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
 volumes:
   pgdata:

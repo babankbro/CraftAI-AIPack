@@ -1,6 +1,10 @@
 import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 
+// next-auth ไม่รู้จัก Next.js basePath (ดูรายละเอียดใน src/auth.ts) — redirectTo ของ signOut()
+// ต้องใส่ basePath เอง ไม่งั้นหลัง signOut จะ redirect ไปที่ "/login" (root) แล้ว 404
+const BASE_PATH = process.env.BASE_PATH || "/aipack";
+
 export default async function PendingRolePage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
@@ -20,7 +24,7 @@ export default async function PendingRolePage() {
       <form
         action={async () => {
           "use server";
-          await signOut({ redirectTo: "/login" });
+          await signOut({ redirectTo: `${BASE_PATH}/login` });
         }}
         className="mt-6"
       >

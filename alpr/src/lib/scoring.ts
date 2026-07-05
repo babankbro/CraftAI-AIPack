@@ -3,6 +3,7 @@ import { scoreToBand, type QualityBand } from "@/lib/ai/rubric";
 export interface CriterionScore {
   code: "C1" | "C2" | "C3" | "C4" | "C5";
   level: number;
+  reason?: string; // เหตุผลเพิ่มเติมที่ CAM ให้ไว้ประกอบการตัดสินระดับคะแนน
 }
 
 const REQUIRED_CODES = ["C1", "C2", "C3", "C4", "C5"] as const;

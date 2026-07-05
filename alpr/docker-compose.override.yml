@@ -1,0 +1,15 @@
+# Docker Compose auto-loads this file (ต่อจาก docker-compose.yml) เฉพาะตอนไม่ระบุ -f เอง
+# เช่น `docker compose up` / `make up` — ใช้สำหรับ dev เท่านั้น (hot reload + migrate on boot)
+# เมื่อ deploy prod ด้วย `-f docker-compose.yml -f docker-compose.prod.yml` (make up-prod)
+# ไฟล์นี้จะไม่ถูกรวมด้วย ทำให้ prod ไม่มี source bind-mount ทับ standalone build โดยไม่ตั้งใจ
+services:
+  app:
+    build:
+      target: dev
+    command: sh -c "npx prisma migrate deploy && npm run dev"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/.next
+    # healthcheck ของ base ใช้ wget ตรวจ /login — ใช้ได้ทั้ง dev (next dev bind ทุก interface)
+    # และ prod (runner ตั้ง HOSTNAME=0.0.0.0 ใน docker-compose.prod.yml) จึงไม่ต้อง override ซ้ำที่นี่

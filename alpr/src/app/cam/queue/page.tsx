@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { AppHeader } from "@/components/AppHeader";
+import { DownloadReportButton } from "@/components/DownloadReportButton";
 import Link from "next/link";
 
 type ChecklistItem = { key: string; found: boolean };
@@ -37,7 +38,12 @@ export default async function CamQueuePage() {
 
   return (
     <>
-      <AppHeader userName={session.user.name ?? session.user.email ?? ""} roleLabel="ครูพี่เลี้ยง" />
+      <AppHeader
+        userName={session.user.name ?? session.user.email ?? ""}
+        roleLabel="ครูพี่เลี้ยง"
+        isAdmin={session.user.role === "admin"}
+        isCam={session.user.role === "cam" || session.user.role === "admin"}
+      />
       <main className="mx-auto max-w-[900px] px-6 py-8">
         <h2 className="mb-5 text-2xl font-semibold">คิวรอตรวจ ({pending.length})</h2>
 
@@ -102,14 +108,25 @@ export default async function CamQueuePage() {
               {done.map((p) => (
                 <div
                   key={p.id}
-                  className="flex items-center justify-between rounded-2xl border border-[color:var(--border-soft)] bg-white p-4 opacity-80"
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[color:var(--border-soft)] bg-white p-4"
                 >
-                  <h3 className="text-[15px] font-semibold">
-                    {p.cat.name} · {p.subject}
-                  </h3>
-                  <span className="font-heading font-semibold text-success">
-                    {p.finalEvaluation?.total}/20 ✓
-                  </span>
+                  <div>
+                    <h3 className="text-[15px] font-semibold">
+                      {p.cat.name} · {p.subject}
+                    </h3>
+                    <span className="font-heading font-semibold text-success">
+                      {p.finalEvaluation?.total}/20 ✓
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Link
+                      href={`/cam/evaluate/${p.id}`}
+                      className="whitespace-nowrap rounded-xl border border-[color:var(--border)] bg-white px-4 py-2 text-sm font-semibold hover:bg-[#fafafa]"
+                    >
+                      แก้ไขการประเมิน
+                    </Link>
+                    <DownloadReportButton planId={p.id} />
+                  </div>
                 </div>
               ))}
             </div>

@@ -26,7 +26,12 @@ export default async function CatUploadPage() {
 
   return (
     <>
-      <AppHeader userName={session.user.name ?? session.user.email ?? ""} roleLabel="ครูผู้สอน" />
+      <AppHeader
+        userName={session.user.name ?? session.user.email ?? ""}
+        roleLabel="ครูผู้สอน"
+        isAdmin={session.user.role === "admin"}
+        isCam={session.user.role === "admin"}
+      />
       <main className="mx-auto max-w-[820px] px-6 py-8">
         <h2 className="mb-5 text-2xl font-semibold">อัปโหลดแผนการสอน</h2>
         <UploadForm />

@@ -10,6 +10,6 @@
 3. ตั้ง env `REPORT_FONT_PATH=assets/fonts/IBMPlexSansThai-Regular.ttf` (ค่าเริ่มต้นตรงนี้อยู่แล้วใน `src/lib/report.ts`)
 
 ## สถานะปัจจุบัน
-⚠️ **ยังไม่ได้ใส่ไฟล์ฟอนต์ในโปรเจกต์นี้** (ไม่มีเครื่องมือดาวน์โหลดไฟล์ binary ในสภาพแวดล้อมที่สร้างโค้ดนี้)
+✅ ใส่ไฟล์ฟอนต์แล้ว (`IBMPlexSansThai-Regular.ttf`, ดาวน์โหลดจาก [google/fonts](https://github.com/google/fonts/tree/main/ofl/ibmplexsansthai) repo — SIL OFL)
 ถ้าไม่พบไฟล์ฟอนต์ตาม path ที่ตั้งไว้ `src/lib/report.ts` จะ throw error ที่อธิบายชัดเจน
-แทนที่จะสร้าง PDF ที่ตัวอักษรไทยแสดงผลผิดเพี้ยนแบบเงียบ ๆ — ต้องใส่ฟอนต์ก่อนใช้งานฟีเจอร์รายงาน PDF จริง
+แทนที่จะสร้าง PDF ที่ตัวอักษรไทยแสดงผลผิดเพี้ยนแบบเงียบ ๆ

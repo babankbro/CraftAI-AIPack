@@ -302,3 +302,15 @@ model AuditLog {
   @@index([planId, createdAt])
   @@map("audit_logs")
 }
+
+// ─────────────────────────── APP SETTINGS (แถวเดียว — admin ตั้งค่า AI provider/model ผ่าน UI) ───────────────────────────
+
+model AppSetting {
+  id          Int        @id @default(1) // singleton — มีแถวเดียวเสมอ (id=1)
+  aiProvider  AiProvider @default(gemini) @map("ai_provider")
+  geminiModel String?    @map("gemini_model") // null = ใช้ default จาก env (GEMINI_MODEL)
+  openaiModel String?    @map("openai_model") // null = ใช้ default จาก env (OPENAI_MODEL)
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  @@map("app_settings")
+}

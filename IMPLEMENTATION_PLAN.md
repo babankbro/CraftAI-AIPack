@@ -117,7 +117,7 @@ CMD ["node","server.js"]
 ### 1.3 `.env.example`
 ```
 BASE_PATH=/aipack
-NEXTAUTH_URL=http://localhost:3000/aipack
+NEXTAUTH_URL=http://localhost:3000/aipack/api/auth  # ต้องรวม /api/auth — next-auth ใช้ pathname นี้เป็น internal route prefix
 NEXTAUTH_SECRET=changeme
 DATABASE_URL=postgresql://alpr:alpr@postgres:5432/alpr
 MINIO_ENDPOINT=minio  MINIO_PORT=9000  MINIO_USE_SSL=false

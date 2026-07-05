@@ -4,9 +4,19 @@ import { promisify } from "util";
 import { writeFile, unlink } from "fs/promises";
 import { tmpdir } from "os";
 import { join } from "path";
+import { pathToFileURL } from "url";
 import { randomUUID } from "crypto";
 
 const execFileAsync = promisify(execFile);
+
+/**
+ * pdf-parse (ผ่าน pdfjs-dist) พยายาม auto-resolve path ของ pdf.worker.mjs เอง แต่ Next.js
+ * (Turbopack) bundle ใหม่ทำให้ path ที่เดาไว้ผิด (หา chunk ไม่เจอ, throw "Setting up fake worker
+ * failed") ต้องชี้ path ของ worker file บนดิสก์ตรง ๆ ผ่าน PDFParse.setWorker() แทน
+ */
+PDFParse.setWorker(
+  pathToFileURL(join(process.cwd(), "node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs")).href
+);
 
 /** จำนวนอักขระต่ำสุดต่อหน้าที่ถือว่า "มีข้อความดิจิทัลอยู่แล้ว" — ต่ำกว่านี้ถือว่าเป็นหน้าสแกน ต้อง OCR */
 const MIN_TEXT_CHARS_PER_PAGE = 20;

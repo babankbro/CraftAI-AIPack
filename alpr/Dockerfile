@@ -33,5 +33,9 @@ COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/public ./public
 COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
+# @napi-rs/canvas (native addon ให้ pdfjs-dist render หน้า PDF เป็นภาพสำหรับ OCR)
+# ไม่ถูกดึงเข้า .next/standalone อัตโนมัติ เพราะ pdfjs-dist require มันแบบ dynamic/optional
+# ที่ next build's dependency tracing (node-file-trace) มองไม่เห็น — ต้อง copy เองตรง ๆ
+COPY --from=build /app/node_modules/@napi-rs ./node_modules/@napi-rs
 EXPOSE 3000
 CMD ["node", "server.js"]

@@ -26,7 +26,12 @@ export default async function CamSummaryPage({
 
   return (
     <>
-      <AppHeader userName={session.user.name ?? session.user.email ?? ""} roleLabel="ครูพี่เลี้ยง" />
+      <AppHeader
+        userName={session.user.name ?? session.user.email ?? ""}
+        roleLabel="ครูพี่เลี้ยง"
+        isAdmin={session.user.role === "admin"}
+        isCam={session.user.role === "cam" || session.user.role === "admin"}
+      />
       <main className="mx-auto max-w-[820px] px-6 py-8">
         <h2 className="mb-1 text-2xl font-semibold">สรุปผลและลงนาม</h2>
         <p className="mb-6 text-sm text-muted">

@@ -49,7 +49,14 @@ export async function POST(
   });
 
   // FR-5.3 — บันทึก audit ทุกครั้งที่ CAM ยืนยัน/แก้ (ai_level → cam_level)
-  const aiCriteria = (latestAi?.criteria as Array<{ code: string; level: number }>) || [];
+  const aiCriteria = (latestAi?.criteria as Array<{
+    code: string;
+    level: number;
+    reason: string;
+    evidence: Array<{ quote: string; page: number | null }>;
+    confidence: string;
+    no_evidence: boolean;
+  }>) || [];
   await prisma.auditLog.createMany({
     data: body.criteria.map((c) => ({
       planId,
@@ -79,6 +86,7 @@ export async function POST(
       position: body.position ?? null,
       signedAt,
       criteria: body.criteria,
+      aiCriteria,
       total,
       band,
       plcAction,

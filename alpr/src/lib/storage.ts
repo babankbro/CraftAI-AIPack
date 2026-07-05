@@ -10,14 +10,31 @@ import { randomUUID } from "crypto";
 const useSsl = process.env.MINIO_USE_SSL === "true";
 const endpoint = `${useSsl ? "https" : "http"}://${process.env.MINIO_ENDPOINT}:${process.env.MINIO_PORT}`;
 
+const credentials = {
+  accessKeyId: process.env.MINIO_ACCESS_KEY!,
+  secretAccessKey: process.env.MINIO_SECRET_KEY!,
+};
+
+/** ใช้เชื่อมต่อ MinIO จากฝั่งเซิร์ฟเวอร์ (ภายใน docker network เช่น "minio:9000") */
 export const s3 = new S3Client({
   endpoint,
   region: "us-east-1", // MinIO ไม่สนใจ region จริง แต่ SDK ต้องการค่า
   forcePathStyle: true, // จำเป็นสำหรับ MinIO
-  credentials: {
-    accessKeyId: process.env.MINIO_ACCESS_KEY!,
-    secretAccessKey: process.env.MINIO_SECRET_KEY!,
-  },
+  credentials,
+});
+
+/**
+ * client แยกต่างหากสำหรับ "เซ็น" presigned URL เท่านั้น (ไม่ได้ใช้เชื่อมต่อจริง)
+ * เพราะ endpoint ที่ใช้เซ็น (MINIO_ENDPOINT="minio", ชื่อ host ภายใน docker network)
+ * ไม่ใช่ endpoint ที่ browser ของผู้ใช้เข้าถึงได้ — ต้องเซ็นด้วย public endpoint แยกต่างหาก
+ * (dev default: localhost:9000 ซึ่ง map ออกมาจาก docker-compose แล้ว)
+ */
+const publicEndpoint = process.env.MINIO_PUBLIC_ENDPOINT || "http://localhost:9000";
+const s3Public = new S3Client({
+  endpoint: publicEndpoint,
+  region: "us-east-1",
+  forcePathStyle: true,
+  credentials,
 });
 
 export const BUCKETS = {
@@ -52,7 +69,7 @@ export async function getPresignedUrl(
   expiresInSeconds = 300
 ): Promise<string> {
   return getSignedUrl(
-    s3,
+    s3Public,
     new GetObjectCommand({ Bucket: bucket, Key: key }),
     { expiresIn: expiresInSeconds }
   );

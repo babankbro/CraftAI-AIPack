@@ -18,7 +18,12 @@ export default async function CatResultsPage() {
 
   return (
     <>
-      <AppHeader userName={session.user.name ?? session.user.email ?? ""} roleLabel="ครูผู้สอน" />
+      <AppHeader
+        userName={session.user.name ?? session.user.email ?? ""}
+        roleLabel="ครูผู้สอน"
+        isAdmin={session.user.role === "admin"}
+        isCam={session.user.role === "admin"}
+      />
       <main className="mx-auto max-w-[820px] px-6 py-8">
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-2xl font-semibold">ผลประเมินของฉัน</h2>

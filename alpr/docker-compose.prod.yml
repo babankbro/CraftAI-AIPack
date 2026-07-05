@@ -9,11 +9,11 @@ services:
       - "9000:9000" # เปิดเฉพาะ API; ปิด console (9001) หรือคุมด้วย firewall
 
   app:
-    build:
-      context: .
-      target: runner
-    command: ["node", "server.js"]
     restart: always
-    volumes: [] # ไม่ mount source ใน prod (ใช้ standalone build)
     ports:
       - "3000:3000"
+    environment:
+      # next standalone server.js ใช้ process.env.HOSTNAME ถ้ามีเป็น bind host — Docker ตั้ง
+      # HOSTNAME เป็น container id โดย default ทำให้ bind เฉพาะ IP นั้น ไม่ตอบ 127.0.0.1
+      # (ทำให้ healthcheck จากใน container เดียวกันเชื่อมต่อไม่ได้) ต้อง override เป็น 0.0.0.0 เอง
+      HOSTNAME: "0.0.0.0"

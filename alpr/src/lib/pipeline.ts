@@ -58,7 +58,7 @@ export async function processPlan(planId: string): Promise<void> {
       where: { code: RUBRIC_VERSION_CODE },
     });
 
-    const evaluator = getAiEvaluator();
+    const evaluator = await getAiEvaluator();
     const aiResult = await evaluator.evaluatePlan({ planText: extracted.text });
 
     await prisma.aiEvaluation.create({

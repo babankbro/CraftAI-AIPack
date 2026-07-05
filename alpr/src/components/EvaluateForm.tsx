@@ -23,7 +23,7 @@ export function EvaluateForm({
   planId: string;
   rubric: RubricCriterionDef[];
   aiCriteria: AiCriterion[];
-  existingFinal: Array<{ code: string; level: number }> | null;
+  existingFinal: Array<{ code: string; level: number; reason?: string }> | null;
 }) {
   const router = useRouter();
   const [levels, setLevels] = useState<Record<string, number>>(() => {
@@ -32,6 +32,13 @@ export function EvaluateForm({
       const existing = existingFinal?.find((f) => f.code === c.code)?.level;
       const aiLevel = aiCriteria.find((a) => a.code === c.code)?.level;
       init[c.code] = existing ?? aiLevel ?? 2;
+    }
+    return init;
+  });
+  const [reasons, setReasons] = useState<Record<string, string>>(() => {
+    const init: Record<string, string> = {};
+    for (const c of rubric) {
+      init[c.code] = existingFinal?.find((f) => f.code === c.code)?.reason ?? "";
     }
     return init;
   });
@@ -51,7 +58,11 @@ export function EvaluateForm({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          criteria: Object.entries(levels).map(([code, level]) => ({ code, level })),
+          criteria: Object.entries(levels).map(([code, level]) => ({
+            code,
+            level,
+            reason: reasons[code]?.trim() || undefined,
+          })),
           sign: false,
         }),
       });
@@ -126,6 +137,19 @@ export function EvaluateForm({
               <p className="mt-2 text-xs text-muted">
                 {c.descriptors.find((d) => d.level === levels[c.code])?.text}
               </p>
+
+              <label className="mt-3 block text-xs font-semibold text-muted">
+                เหตุผลเพิ่มเติมของ CAM (ถ้ามี)
+              </label>
+              <textarea
+                rows={2}
+                value={reasons[c.code] ?? ""}
+                onChange={(e) =>
+                  setReasons((s) => ({ ...s, [c.code]: e.target.value }))
+                }
+                placeholder="อธิบายเหตุผลหรือหลักฐานเพิ่มเติมที่ใช้ประกอบการตัดสินระดับนี้…"
+                className="mt-1 w-full rounded-lg border border-[color:var(--border)] bg-[color:var(--input-bg)] px-3 py-2 text-xs"
+              />
             </div>
           </details>
         );

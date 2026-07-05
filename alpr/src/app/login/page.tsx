@@ -1,5 +1,9 @@
 import { signIn } from "@/auth";
 
+// next-auth ไม่รู้จัก Next.js basePath (ดูรายละเอียดใน src/auth.ts) — redirectTo ต้องใส่ basePath เอง
+// ไม่งั้นหลัง login สำเร็จจะ redirect ไปที่ "/" (root ของโดเมน) แล้ว 404 แทนที่จะเป็นหน้าแอปจริง
+const BASE_PATH = process.env.BASE_PATH || "/aipack";
+
 const FEATURES = [
   { icon: "📄", title: "อัปโหลดแผน", desc: "ส่งแผนการสอน (PDF/DOCX) รองรับ OCR ไฟล์สแกน" },
   { icon: "✨", title: "AI ช่วยประเมิน", desc: "เสนอคะแนน 5 องค์ประกอบพร้อมร่องรอยหลักฐาน" },
@@ -53,7 +57,7 @@ export default function LoginPage() {
         <form
           action={async () => {
             "use server";
-            await signIn("google", { redirectTo: "/" });
+            await signIn("google", { redirectTo: BASE_PATH });
           }}
         >
           <button
