@@ -64,9 +64,12 @@ PostgreSQL via Prisma (`alpr/prisma/schema.prisma`). **14 tables** (13 from the 
 ```json
 { "code": "C1", "level": 3, "reason": "…",
   "evidence": [{"quote":"…","page":2}],
-  "confidence": "high", "no_evidence": false }
+  "confidence": "high", "no_evidence": false,
+  "suggestions": ["…"],          // improvement advice (added for deep analysis)
+  "example": "…"                  // plan-specific worked example (nullable)
+}
 ```
-`final_evaluations.criteria_final` additionally carries the CAM's own `reason` (optional) — see [[CAM Review & PDF Report]].
+`suggestions`/`example` come from the per-criterion evaluation ([[AI Evaluation & Rubric]]). `final_evaluations.criteria_final` additionally carries the CAM's own `reason` (optional) — see [[CAM Review & PDF Report]].
 
 **`extractions.checklist`**: array of `{key, found, page}` for the 5 signals.
 

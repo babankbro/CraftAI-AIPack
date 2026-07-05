@@ -1,3 +1,6 @@
+> [!info] Source document (original architecture design) — part of [[Source Documents]].
+> As-built architecture: [[System Architecture]] · [[Tech Stack]] · [[basePath & Deployment]] (see the "Deviations from the original design" table there).
+
 # สถาปัตยกรรมระบบ (Design Architecture) — ALPR
 ## ระบบตรวจประเมินแผนการจัดการเรียนรู้ AIPACK
 

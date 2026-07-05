@@ -22,12 +22,14 @@ aliases: [Architecture, System Design]
         └──┬──────────┬──────────────────┘            │ (Thai OCR) · mammoth │
            │          │                               └────────────────────┘
      SQL   │          │ S3 API                               │ text
-     ┌─────▼────┐  ┌──▼─────────┐            ┌───────────────▼──────────────┐
+     ┌─────▼────┐  ┌──▼─────────┐            ┌────────────────▼─────────────┐
      │ Postgres │  │  MinIO      │           │  AI Provider Abstraction      │
-     │ (metadata│  │  (files)    │           │  ├─ GeminiEvaluator (@google) │
-     │  scores, │  │  3 buckets  │           │  └─ OpenAiEvaluator (openai)  │
-     │  audit)  │  │             │           │  chosen by DB app_settings →  │
-     └──────────┘  └────────────┘           │  fallback env AI_PROVIDER      │
+     │ (metadata│  │  (files)    │           │  BaseAiEvaluator: per-criterion│
+     │  scores, │  │  3 buckets  │           │   sequential C1→C5            │
+     │  audit)  │  │             │           │  ├─ Gemini (@google, JSON)    │
+     └──────────┘  └────────────┘           │  └─ OpenAI (Responses API)    │
+                                             │  chosen by DB app_settings →  │
+                                             │  fallback env AI_PROVIDER      │
                                              └──────────────────────────────┘
 ```
 
@@ -41,7 +43,8 @@ aliases: [Architecture, System Design]
 | **Route Handlers** | JSON API for upload, review, report, auth | `app/api/**/route.ts` |
 | **Proxy (RBAC)** | Gate routes by role/status before handlers | `proxy.ts` (was `middleware.ts`) |
 | **Auth** | Google OAuth, DB sessions, role elevation | `auth.ts` |
-| **Domain lib** | Pipeline, scoring, rubric, report | `lib/pipeline.ts`, `lib/scoring.ts`, `lib/ai/`, `lib/report.ts` |
+| **Domain lib** | Pipeline, scoring, rubric, report | `lib/pipeline.ts`, `lib/scoring.ts`, `lib/report.ts` |
+| **AI evaluation** | Pluggable providers; per-criterion iteration | `lib/ai/` (`base.ts` orchestrates C1–C5; `gemini.ts`/`openai.ts` implement `runJson`) |
 | **Extraction** | PDF/DOCX text + Thai OCR + checklist | `lib/extract/` |
 | **Storage** | MinIO S3 client + presigned URLs | `lib/storage.ts` |
 | **Data** | Prisma client | `lib/db.ts`, `prisma/schema.prisma` |

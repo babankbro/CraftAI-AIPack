@@ -18,11 +18,13 @@ Home.md                        ← index / map of content
                                Upload-to-Report Pipeline
 02-Data/                       Database Schema, AI Evaluation & Rubric
 03-Auth/                       Authentication & RBAC
-04-Features/                   Admin Console, CAM Review & PDF Report
+04-Features/                   Admin Console, CAM Review & PDF Report, File Viewer
 05-Reference/                  Environment Variables, Assessment Forms
 06-Session-Log/                Build Session Changelog, Bugs Fixed
+07-Source-Docs/                the original design/spec docs (SRS, plan, architecture,
+                               DB schema, UX/UI, forms) — moved in; see Source Documents.md
 ```
 
 Notes are cross-linked with `[[wikilinks]]`. The vault documents the app under `../alpr/` (source of truth: `alpr/src/`, `alpr/prisma/schema.prisma`).
 
-Source design docs this vault synthesizes: `../SRS_AIPACK_LessonPlan_Review.md`, `../design_architecture.md`, `../design_database_schema.md`, `../UX_UI_Design_ALPR.md`, `../assessment_forms_reference.md`, `../IMPLEMENTATION_PLAN.md`.
+The **original design/spec documents now live inside the vault** under `07-Source-Docs/` (see `Source Documents.md`). The `00`–`06` notes are the synthesized, as-built view; `07-Source-Docs/` holds the authoritative originals.

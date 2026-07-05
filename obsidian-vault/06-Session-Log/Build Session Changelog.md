@@ -50,5 +50,20 @@ Everything changed/added while taking the cloned repo from "code present, never 
 ## Recurring operational lesson
 Next.js dev keeps the `.next` build in an **anonymous Docker volume** that survives restarts → stale-cache 404s after edits/model swaps. Fix: `docker compose up -d --build --force-recreate --renew-anon-volumes app`. Hit this several times.
 
+---
+
+## Follow-up session: deeper AI analysis + file viewer
+
+Commit `6e7e948`. See [[AI Evaluation & Rubric]], [[File Viewer]], [[CAM Review & PDF Report]].
+
+- **OpenAI → Responses API**: rewrote `OpenAiEvaluator` to `client.responses.create` so reasoning models (`gpt-5.5-pro`) work; verified `gpt-5.5-pro`, `gpt-5.1-chat-latest`, `gpt-4o-mini` all run.
+- **Per-criterion iteration**: new `BaseAiEvaluator` (`lib/ai/base.ts`) evaluates C1–C5 in 5 **sequential** focused calls; providers reduced to a `runJson()` method. Added JSON `unwrapJson` + `cleanJsonText` + retry×3.
+- **Schema extended**: each criterion now returns `suggestions[]` + `example` (plus existing evidence quotes). New `CriterionAnalysisSchema` (code-less per-call response).
+- **Richer display**: CAM evaluate, CAT results draft, and the PDF report now show evidence sentences + suggestions + example per criterion. Report per-criterion section reflowed to a flowing layout that paginates cleanly.
+- **In-browser file viewer** `/plans/[id]/view`: PDF via iframe, DOCX via mammoth→HTML (`docxToHtml`, `getObjectBuffer`). All "ดูไฟล์ต้นฉบับ" buttons now open it in a new tab.
+- **CAT sees AI draft early**: `cat/upload` AI-score badge; `cat/results` labeled pre-sign draft with full deep analysis.
+- **Model reality (measured)**: Gemini deep run ~114 s; `gpt-5.5-pro` ~601 s (~10 min) + quota-limited → instance left on Gemini, gpt-5.5-pro one-click-away in [[Admin Console]].
+- Tests: 34 → **37** (added per-criterion analysis + suggestions/example schema tests).
+
 ## Related
-- [[Bugs Fixed]] · [[Milestones & Status]] · [[System Architecture]]
+- [[Bugs Fixed]] · [[Milestones & Status]] · [[System Architecture]] · [[File Viewer]]

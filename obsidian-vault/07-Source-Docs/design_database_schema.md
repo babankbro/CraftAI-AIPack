@@ -1,3 +1,6 @@
+> [!info] Source document (original DB design v1.1, 13 tables) — part of [[Source Documents]].
+> As-built schema (14 tables incl. `app_settings`, + JSONB shapes): [[Database Schema]].
+
 # Database Schema Design — ALPR (PostgreSQL)
 ## ระบบตรวจประเมินแผนการจัดการเรียนรู้ AIPACK
 

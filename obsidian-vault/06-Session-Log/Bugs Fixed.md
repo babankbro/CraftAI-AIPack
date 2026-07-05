@@ -58,5 +58,15 @@ Real bugs caught while getting ALPR running end-to-end. Grouped by theme — mos
 | 20 | Hydration mismatch on `<body>` | Grammarly browser extension injects attributes pre-hydration (not an app bug) | `suppressHydrationWarning` on `<body>` |
 | 21 | Admin saw no menu / landed on teacher page | `/` redirect had no `admin` branch | route admin → `/admin/users` |
 
+## AI provider / per-criterion evaluation
+
+| # | Symptom | Root cause | Fix |
+|---|---------|-----------|-----|
+| 22 | Every upload `429 insufficient_quota` | admin had switched provider to OpenAI, whose key had no billing | switch back to Gemini; later OpenAI billing was topped up |
+| 23 | `gpt-5.5-pro` → `404: not a chat model` | it only supports OpenAI's **Responses API**, not Chat Completions | rewrote `OpenAiEvaluator` to `client.responses.create` (works for chat + reasoning models) |
+| 24 | Per-criterion call: Zod `expected object, received array` | Gemini JSON mode sometimes wraps one criterion as `[{…}]` / `{criteria:[…]}` | `unwrapJson()` in `base.ts` |
+| 25 | Per-criterion call: `SyntaxError … in JSON` | LLM occasionally emits slightly malformed JSON (unescaped quote in `example`) | `cleanJsonText()` (strip fences) + retry ×3 (stochastic output usually valid on retry) |
+| 26 | `gpt-5.5-pro` deep run took **601 s** (~10 min) | 5 sequential reasoning calls, each ~2 min | not a code bug — left instance on Gemini (~114 s); documented in [[AI Evaluation & Rubric]] |
+
 ## Related
 - [[basePath & Deployment]] · [[Authentication & RBAC]] · [[Build Session Changelog]] · [[Upload-to-Report Pipeline]]

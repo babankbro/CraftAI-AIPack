@@ -42,8 +42,8 @@ From `alpr/.env.example` (copy to `.env`; `.env*` is gitignored except `.env.exa
 | `AI_PROVIDER` | `gemini` | `gemini` \| `openai`; **DB `app_settings` overrides this** at runtime |
 | `GEMINI_API_KEY` | … | `@google/generative-ai` SDK (not Vertex) |
 | `GEMINI_MODEL` | `gemini-2.5-pro` | current instance uses `gemini-3.1-pro-preview` via env; `gemini-3-pro` is invalid |
-| `OPENAI_API_KEY` | … | key needs billing/quota to work |
-| `OPENAI_MODEL` | `gpt-4o-mini` | best available: `gpt-5.5-pro` |
+| `OPENAI_API_KEY` | … | needs billing/quota; uses the Responses API (reasoning models OK) |
+| `OPENAI_MODEL` | `gpt-4o-mini` | `gpt-5.5-pro` works but ~10 min/plan; `gpt-5.1-chat-latest` is a fast alt. See [[AI Evaluation & Rubric#Model selection & the speed/cost reality measured]] |
 
 ## PDF report
 | Var | Example | Notes |

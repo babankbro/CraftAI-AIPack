@@ -1,3 +1,6 @@
+> [!info] Source document (UX/UI wireframes & design system) — part of [[Source Documents]].
+> As-built UI: [[CAM Review & PDF Report]] · [[File Viewer]] · [[Admin Console]] · [[Tech Stack]] (tokens/fonts mirror DigiNest LMS).
+
 # UX/UI Design — ระบบตรวจประเมินแผนการสอน AIPACK (ALPR)
 
 | ฟิลด์ | รายละเอียด |

@@ -16,8 +16,13 @@ Scoped by `mentor_links` (a CAM sees plans of the CATs they're linked to; empty 
 ## Evaluate page (`/cam/evaluate/[planId]`)
 
 Side-by-side (Evidence-first):
-- **Left**: extracted plan text (sticky, scrollable), OCR badge, **"📄 ดูไฟล์ต้นฉบับ"** button (view original upload via presigned URL — added in session).
-- **Right** (`EvaluateForm`): per criterion C1–C5 — the AI's proposed level, reasoning, confidence, and evidence quote; a 4/3/2/1 level selector for the CAM; **and a "เหตุผลเพิ่มเติมของ CAM" textarea** (added in session) so the CAM records their own justification.
+- **Left**: extracted plan text (sticky, scrollable), OCR badge, **"📄 ดูไฟล์ต้นฉบับ"** — now opens the [[File Viewer]] page (in-browser PDF/DOCV render), not a raw download.
+- **Right** (`EvaluateForm`): per criterion C1–C5 — the AI's deep analysis + a 4/3/2/1 level selector + a **"เหตุผลเพิ่มเติมของ CAM"** textarea for the CAM's own justification.
+
+The AI analysis per criterion now shows (from the per-criterion evaluation — see [[AI Evaluation & Rubric]]):
+- **ประโยคหลักฐาน** — every evidence quote (+page), i.e. the sentences that justified the score
+- **คำแนะนำเพื่อปรับปรุง** — improvement suggestions
+- **ตัวอย่างที่ดีขึ้น** — a concrete plan-specific example
 
 The CAM's reasoning is stored in `final_evaluations.criteria_final[].reason` and pre-filled on re-edit.
 
@@ -37,9 +42,9 @@ Built with `pdf-lib` + embedded IBM Plex Sans Thai (Regular + Bold). Structured,
 - Colored header band with title.
 - **Section 1** — info panel (subject, grade, CAT/CAM names, date).
 - **Section 2** — score summary: large total, colored quality-band badge, PLC action.
-- **Per-criterion comparison cards** — AI proposed level + reasoning + confidence side-by-side with CAM's confirmed level + CAM's own reasoning; color-coded badges (AI = primary, CAM = green).
+- **Per-criterion sections** (reflowed to a flowing layout so variable-length content paginates cleanly): CAM-confirmed + AI-proposed level badges, AI reasoning, **evidence quotes** (left-accented), **suggestions** (bulleted), a shaded **example** box, then the CAM's own reasoning, with a separator between criteria.
 - **Section 4** — colored Strengths / Areas-for-Growth boxes.
-- Signature line; automatic pagination (long text flows to page 2 without splitting a card).
+- Signature line; automatic pagination.
 
 Constraints learned:
 - Font file **must** be present or it throws a clear error (no silent garbled Thai).

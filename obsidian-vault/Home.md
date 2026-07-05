@@ -35,6 +35,7 @@ This vault documents the **as-built system architecture** of ALPR, synthesized f
 ### Features
 - [[Admin Console]] — user/role management + AI provider settings
 - [[CAM Review & PDF Report]] — side-by-side review, sign-off, report design
+- [[File Viewer]] — in-browser PDF/DOCX viewer + CAT early-AI-draft views
 
 ### Reference
 - [[Environment Variables]] — every env var and what it does
@@ -43,6 +44,9 @@ This vault documents the **as-built system architecture** of ALPR, synthesized f
 ### Session Log
 - [[Build Session Changelog]] — everything changed/fixed during the build session
 - [[Bugs Fixed]] — the real bugs caught while getting it running
+
+### Source Documents (originals)
+- [[Source Documents]] — the original SRS, plan, architecture, DB schema, UX/UI & forms docs (moved into the vault)
 
 ---
 

@@ -34,45 +34,64 @@ The "developing → must not teach yet" warning (AC-6) is surfaced prominently i
 
 ## The JSON contract (Zod-enforced)
 
-`alpr/src/lib/ai/schema.ts` — every provider must return this exact shape, validated on parse:
+`alpr/src/lib/ai/schema.ts` — each per-criterion call returns a `CriterionAnalysis` (no `code`; the loop injects it), validated on parse:
 
 ```ts
-CriterionResult = {
-  code: "C1".."C5",
+CriterionAnalysis = {
   level: int 1..4,
   reason: string,
-  evidence: { quote: string, page: int|null }[],
+  evidence: { quote: string, page: int|null }[],   // the sentences that justified the score
   confidence: "high"|"medium"|"low",
-  no_evidence: boolean            // if true → low level, never guess high (FR-4.2/AC-3)
+  no_evidence: boolean,           // if true → low level, never guess high (FR-4.2/AC-3)
+  suggestions: string[],          // concrete improvements to raise the level
+  example: string | null          // a plan-specific worked example of a better version
 }
-EvaluationResult = { criteria: CriterionResult[5], suggested_total: int 0..20 }
+CriterionResult   = CriterionAnalysis & { code: "C1".."C5" }
+EvaluationResult  = { criteria: CriterionResult[5], suggested_total: int 0..20 }
 ```
 
-This decouples business logic from the provider — see [[Database Schema|ai_evaluations]] stores `provider` + `model` per run for reproducibility.
+`suggestions` and `example` were **added** to power the richer analysis (evidence + advice + examples) shown in [[CAM Review & PDF Report]]. Both default to `[]` / `null` so older stored evaluations still parse.
 
-## Provider abstraction
+This decouples business logic from the provider — [[Database Schema|ai_evaluations]] stores `provider` + `model` per run for reproducibility.
+
+## Provider abstraction — per-criterion iteration
 
 ```
-interface AiEvaluator { evaluatePlan(input) → { provider, model, result, promptHash } }
-  ├─ GeminiEvaluator  (@google/generative-ai, responseMimeType: application/json)
-  └─ OpenAiEvaluator  (openai, response_format: json_object)
+BaseAiEvaluator (lib/ai/base.ts)   ← shared orchestration
+  evaluatePlan(): loops C1→C5 SEQUENTIALLY, one focused AI call per criterion
+                  (buildCriterionPrompt), assembles EvaluationResult
+  robustness: unwrapJson (single-element array / {criteria:[…]}) + cleanJsonText
+              (strip ``` fences) + retry ×3 on malformed JSON
+  ├─ GeminiEvaluator  → runJson via @google/generative-ai (responseMimeType json)
+  └─ OpenAiEvaluator  → runJson via OpenAI **Responses API** (client.responses.create,
+                        text.format json_object) — NOT Chat Completions
 
 getAiEvaluator()  [lib/ai/index.ts, async]
   1. read app_settings (id=1) from DB          ← admin UI, see [[Admin Console]]
   2. fall back to env AI_PROVIDER / GEMINI_MODEL / OPENAI_MODEL
 ```
 
-- Constructors accept a `model` override so DB settings flow through.
+- **Per-criterion, not one-shot**: each C gets its own focused call (`buildCriterionPrompt`) → deeper evidence + suggestions + example. Sequential (one after another) to be gentle on rate limits.
+- Providers only implement `runJson(prompt) → string`; the base class does parsing, retry, and assembly.
+- **OpenAI uses the Responses API** so reasoning models (`gpt-5.5-pro`) work — Chat Completions rejects them (`not a chat model`). See [[Bugs Fixed]].
 - Selecting a provider/model is **runtime** (no restart) via [[Admin Console]].
 
-## Model selection (as of build)
+## Model selection & the speed/cost reality (measured)
 
-- **Gemini** — current: `gemini-3.1-pro-preview` (a "thinking" preview model: strongest reasoning, but slower + pricier per call, and previews can change/be pulled). Stable alternative: `gemini-2.5-pro`. `gemini-3-pro` is **not** a valid id (404) — see [[Bugs Fixed]].
-- **OpenAI** — newest available on the key: `gpt-5.5-pro`. ⚠️ the key currently has **no billing/quota** (`insufficient_quota`), so OpenAI won't work until billing is set up.
+| Model | Deep 5-call run | Notes |
+|-------|-----------------|-------|
+| `gemini-3.1-pro-preview` | **~114 s** ✅ | Current default. Fast enough, excellent grounded output. Preview (can change/be pulled) |
+| `gemini-2.5-pro` | — | Stable GA alternative |
+| `gpt-5.5-pro` | **~601 s (~10 min)** ⚠️ | Works (Responses API) but impractically slow for 5 sequential reasoning calls; key also hits `insufficient_quota` |
+| `gpt-5.1-chat-latest` | fast | Good chat-model fallback for OpenAI |
+
+- `gemini-3-pro` is **not** a valid id (404) — must be `gemini-3.1-pro-preview` / `gemini-2.5-pro`.
+- Because gpt-5.5-pro is ~10 min/plan + quota-limited, the running instance is left on **Gemini**; gpt-5.5-pro stays one-click-away in [[Admin Console]].
+- NFR-2 target is ≤90 s; the ~114 s Gemini run slightly exceeds it — an accepted trade for the depth (sequential per-criterion).
 
 ## Testing
 
-`rubric.test.ts`, `schema.test.ts`, `scoring.test.ts`, `checklist.test.ts` — 34 tests covering band mapping, the no-evidence rule, exactly-5-criteria enforcement, and score totals.
+`rubric.test.ts`, `schema.test.ts` (incl. per-criterion analysis + suggestions/example defaults), `scoring.test.ts`, `checklist.test.ts` — **37 tests**.
 
 ## Related
 - [[Upload-to-Report Pipeline]] · [[Admin Console]] · [[CAM Review & PDF Report]] · [[Assessment Forms]]

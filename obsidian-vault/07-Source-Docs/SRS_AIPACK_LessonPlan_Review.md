@@ -1,3 +1,6 @@
+> [!info] Source document (original spec) — part of [[Source Documents]].
+> Synthesized / as-built in: [[Project Overview]] · [[System Architecture]] · [[Authentication & RBAC]] · [[AI Evaluation & Rubric]] · [[basePath & Deployment]]. This file is the authoritative original requirements text.
+
 # เอกสารข้อกำหนดความต้องการซอฟต์แวร์ (SRS)
 ## ระบบตรวจประเมินแผนการจัดการเรียนรู้แบบบูรณาการ AIPACK
 ### AIPACK Lesson Plan Review System (ALPR)

@@ -1,3 +1,6 @@
+> [!info] Source document (the 3 project assessment forms) — part of [[Source Documents]].
+> Distilled in [[Assessment Forms]]; the rubric ALPR implements (Form 3) is in [[AI Evaluation & Rubric]].
+
 # แบบประเมินโครงการ — สรุปโครงสร้าง 3 ฉบับ
 
 > **บริบทโครงการ:** การวิจัยเชิงปฏิบัติการแบบมีส่วนร่วม เพื่อพัฒนาความฉลาดรู้ด้านการอ่าน (Reading Literacy - RL)

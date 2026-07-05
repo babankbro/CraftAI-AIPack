@@ -1,3 +1,6 @@
+> [!info] Source document (original plan) — part of [[Source Documents]].
+> Milestone status & as-built deviations: [[Milestones & Status]] · [[System Architecture]] · [[Build Session Changelog]].
+
 # Implementation Plan — ALPR (Docker-based)
 ## ระบบตรวจประเมินแผนการจัดการเรียนรู้ AIPACK
 

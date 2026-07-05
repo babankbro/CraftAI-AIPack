@@ -16,12 +16,12 @@ Versions pinned in `alpr/package.json` at build time.
 | ORM | **Prisma** + `@prisma/client` | `6.19.3` | 14 tables, 2 migrations |
 | Database | **PostgreSQL** | `16-alpine` | via Docker |
 | Object storage | **MinIO** + `@aws-sdk/client-s3` | — | S3-compatible, presigned URLs |
-| AI (default) | **`@google/generative-ai`** | `0.24.1` | model `gemini-3.1-pro-preview` (configurable) |
-| AI (alt) | **`openai`** | `6.45.0` | wired, needs billing on the key |
-| Validation | **Zod** | `4.4.3` | enforces AI JSON output shape |
+| AI (default) | **`@google/generative-ai`** | `0.24.1` | model `gemini-3.1-pro-preview` (configurable); per-criterion iteration |
+| AI (alt) | **`openai`** | `6.45.0` | uses the **Responses API** (`client.responses.create`) so reasoning models work |
+| Validation | **Zod** | `4.4.3` | enforces AI JSON output shape (+ retry on malformed JSON) |
 | PDF text | **pdf-parse** | `2.4.5` | + `@napi-rs/canvas` `1.0.2` for page rasterization |
 | OCR | **Tesseract CLI** (`tesseract-ocr-data-tha`) | apk pkg | invoked via `child_process`, lang `tha+eng` |
-| DOCX | **mammoth** | `1.12.0` | |
+| DOCX | **mammoth** | `1.12.0` | text extraction + **HTML conversion** for the in-browser [[File Viewer]] |
 | PDF report | **pdf-lib** + `@pdf-lib/fontkit` | `1.17.1` | embeds IBM Plex Sans Thai (Regular + Bold) |
 | Testing | **Vitest** | `4.x` | 34 unit tests, `npm test` |
 

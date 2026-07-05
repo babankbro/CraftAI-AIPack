@@ -22,14 +22,16 @@ The [[Build Session Changelog|original plan]] defined milestones M0–M8. As-bui
 
 - **Admin console** — `/admin/users` (role/status) + `/admin/settings` (AI provider/model). See [[Admin Console]].
 - **`ADMIN_EMAILS`** env-based admin elevation + default `active`/`cat` provisioning policy.
-- **CAM per-criterion reasoning** field (stored in `criteria_final`, shown in report).
-- **Redesigned PDF report** with AI-vs-CAM comparison per criterion. See [[CAM Review & PDF Report]].
 - **`app_settings` table** (14th table) for runtime AI config.
+- **Per-criterion deep AI analysis** — 5 sequential calls, each returning evidence quotes + suggestions + example. See [[AI Evaluation & Rubric]].
+- **CAM per-criterion reasoning** field + **redesigned PDF report** (evidence/suggestions/example, flowing layout). See [[CAM Review & PDF Report]].
+- **In-browser file viewer** + CAT early-AI-draft views. See [[File Viewer]].
+- **OpenAI Responses API** so reasoning models (`gpt-5.5-pro`) work.
 
 ## Known follow-ups / not done
 
 - Real Google OAuth on the KSU host + real production `NEXTAUTH_URL` / `BASE_PATH`.
-- OpenAI provider is wired but the current API key has **no billing/quota** (`insufficient_quota`).
+- `gpt-5.5-pro` works but is ~10 min/plan (sequential reasoning) → instance runs on Gemini; see [[AI Evaluation & Rubric]].
 - CI wiring for `npm test`.
 - Mentor-Mentee link management UI (currently DB-only; admin scope was intentionally kept to role/status).
 - Claude provider (`ai_provider` enum has it, no evaluator implementation yet).
