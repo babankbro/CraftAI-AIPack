@@ -35,20 +35,23 @@ From `alpr/.env.example` (copy to `.env`; `.env*` is gitignored except `.env.exa
 | `MINIO_USE_SSL` | `false` | |
 | `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` | `minio` / `minio12345` | |
 | `MINIO_PUBLIC_ENDPOINT` | `http://localhost:9000` | ⚠️ **browser-reachable** URL for presigned links; prod = real public MinIO URL. See [[Bugs Fixed]] |
+| `MINIO_BUCKET_PLANS` / `_REPORTS` / `_EXTRACTED` | — | *optional* bucket-name overrides; default `alpr-plans` / `alpr-reports` / `alpr-extracted` |
 
 ## AI evaluator
 | Var | Example | Notes |
 |-----|---------|-------|
 | `AI_PROVIDER` | `gemini` | `gemini` \| `openai`; **DB `app_settings` overrides this** at runtime |
 | `GEMINI_API_KEY` | … | `@google/generative-ai` SDK (not Vertex) |
-| `GEMINI_MODEL` | `gemini-2.5-pro` | current instance uses `gemini-3.1-pro-preview` via env; `gemini-3-pro` is invalid |
+| `GEMINI_MODEL` | `gemini-2.5-pro` | env value `gemini-3.1-pro-preview`; **code default** (unset) `gemini-2.5-pro`; `gemini-3-pro` is invalid |
 | `OPENAI_API_KEY` | … | needs billing/quota; uses the Responses API (reasoning models OK) |
-| `OPENAI_MODEL` | `gpt-4o-mini` | `gpt-5.5-pro` works but ~10 min/plan; `gpt-5.1-chat-latest` is a fast alt. See [[AI Evaluation & Rubric#Model selection & the speed/cost reality measured]] |
+| `OPENAI_MODEL` | `gpt-4o-mini` | code default (unset) `gpt-4o`; `gpt-5.5-pro` works but ~10 min/plan; `gpt-5.1-chat-latest` is a fast alt. See [[AI Evaluation & Rubric#Model selection & the speed/cost reality measured]] |
+| `OPENAI_BASE_URL` | — | *optional* — point OpenAI SDK at Azure OpenAI / a proxy |
 
 ## PDF report
 | Var | Example | Notes |
 |-----|---------|-------|
-| `REPORT_FONT_PATH` | `assets/fonts/IBMPlexSansThai-Regular.ttf` | Bold variant auto-resolved next to it |
+| `REPORT_FONT_PATH` | `assets/fonts/IBMPlexSansThai-Regular.ttf` | Thai font (Regular) |
+| `REPORT_FONT_BOLD_PATH` | — | *optional* — Bold variant; defaults to `IBMPlexSansThai-Bold.ttf` next to the Regular |
 
 ## Related
 - [[basePath & Deployment]] · [[Admin Console]] · [[AI Evaluation & Rubric]] · [[Tech Stack]]
