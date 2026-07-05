@@ -3,8 +3,8 @@ import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { AppHeader } from "@/components/AppHeader";
 import { EvaluateForm } from "@/components/EvaluateForm";
-import { DownloadReportButton } from "@/components/DownloadReportButton";
 import { AIPACK_RUBRIC } from "@/lib/ai/rubric";
+import Link from "next/link";
 
 type ChecklistItem = { key: string; found: boolean };
 
@@ -36,6 +36,8 @@ export default async function CamEvaluatePage({
     evidence: Array<{ quote: string; page: number | null }>;
     confidence: string;
     no_evidence: boolean;
+    suggestions?: string[];
+    example?: string | null;
   }>) || [];
   const existingFinal = (plan.finalEvaluation?.criteriaFinal as Array<{
     code: string;
@@ -74,13 +76,13 @@ export default async function CamEvaluatePage({
                 {plan.extraction?.ocrUsed && (
                   <span className="text-xs text-amber">ใช้ OCR ในการสกัด</span>
                 )}
-                <DownloadReportButton
-                  planId={plan.id}
-                  endpoint="download"
-                  variant="outline"
-                  label="📄 ดูไฟล์ต้นฉบับ"
-                  loadingLabel="กำลังเตรียมไฟล์..."
-                />
+                <Link
+                  href={`/plans/${plan.id}/view`}
+                  target="_blank"
+                  className="rounded-lg border border-[color:var(--border)] bg-white px-3 py-1.5 text-xs font-semibold hover:bg-[#fafafa]"
+                >
+                  📄 ดูไฟล์ต้นฉบับ
+                </Link>
               </div>
             </div>
             <div className="m-3.5 flex-1 overflow-auto whitespace-pre-wrap rounded-xl border border-[color:var(--border-soft)] p-4 text-[13px] leading-relaxed text-[#4b5162]">

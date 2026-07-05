@@ -1,39 +1,30 @@
 import OpenAI from "openai";
-import type { AiEvaluator, AiEvaluatorInput, AiEvaluatorOutput } from "./types";
-import { EvaluationResultSchema } from "./schema";
-import { buildEvaluationPrompt, hashPrompt } from "./prompt";
+import { BaseAiEvaluator } from "./base";
 
-export class OpenAiEvaluator implements AiEvaluator {
+export class OpenAiEvaluator extends BaseAiEvaluator {
+  protected provider = "openai" as const;
+  protected model: string;
   private client: OpenAI;
-  private model: string;
 
   constructor(
     apiKey = process.env.OPENAI_API_KEY!,
     baseURL = process.env.OPENAI_BASE_URL || undefined,
     model = process.env.OPENAI_MODEL || "gpt-4o"
   ) {
+    super();
     if (!apiKey) throw new Error("OPENAI_API_KEY is not set");
     this.client = new OpenAI({ apiKey, baseURL });
     this.model = model;
   }
 
-  async evaluatePlan(input: AiEvaluatorInput): Promise<AiEvaluatorOutput> {
-    const prompt = buildEvaluationPrompt(input.planText);
-
-    const res = await this.client.chat.completions.create({
+  protected async runJson(prompt: string): Promise<string> {
+    // ใช้ Responses API (ไม่ใช่ Chat Completions) — โมเดลกลุ่ม reasoning/pro บางตัว
+    // (เช่น gpt-5.5-pro) รองรับเฉพาะ endpoint นี้ ส่วนโมเดลแชตทั่วไปก็ใช้ได้เหมือนกัน
+    const res = await this.client.responses.create({
       model: this.model,
-      response_format: { type: "json_object" },
-      messages: [{ role: "user", content: prompt }],
+      input: prompt,
+      text: { format: { type: "json_object" } },
     });
-
-    const text = res.choices[0]?.message?.content ?? "{}";
-    const parsed = EvaluationResultSchema.parse(JSON.parse(text));
-
-    return {
-      provider: "openai",
-      model: this.model,
-      result: parsed,
-      promptHash: hashPrompt(prompt),
-    };
+    return res.output_text;
   }
 }

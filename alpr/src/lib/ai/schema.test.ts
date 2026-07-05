@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { CriterionResultSchema, EvaluationResultSchema, ChecklistItemSchema } from "./schema";
+import {
+  CriterionResultSchema,
+  CriterionAnalysisSchema,
+  EvaluationResultSchema,
+  ChecklistItemSchema,
+} from "./schema";
 
 const validCriterion = {
   code: "C1" as const,
@@ -13,6 +18,18 @@ describe("CriterionResultSchema", () => {
   it("accepts a well-formed criterion result", () => {
     const parsed = CriterionResultSchema.parse(validCriterion);
     expect(parsed.no_evidence).toBe(false); // default applied
+    expect(parsed.suggestions).toEqual([]); // default applied
+    expect(parsed.example).toBeNull(); // default applied
+  });
+
+  it("accepts suggestions + example when provided (per-criterion deep analysis)", () => {
+    const parsed = CriterionResultSchema.parse({
+      ...validCriterion,
+      suggestions: ["แนบ Prompt จริง", "เพิ่ม fact-check"],
+      example: "ตัวอย่างชุดคำถาม Socratic ...",
+    });
+    expect(parsed.suggestions).toHaveLength(2);
+    expect(parsed.example).toContain("Socratic");
   });
 
   it("rejects a level outside 1-4 (rubric is fixed 4-level scale)", () => {
@@ -73,6 +90,27 @@ describe("EvaluationResultSchema", () => {
         criteria: [validCriterion],
         suggested_total: 21,
       })
+    ).toThrow();
+  });
+});
+
+describe("CriterionAnalysisSchema (per-criterion response, no code)", () => {
+  it("parses a single-criterion analysis and applies defaults", () => {
+    const parsed = CriterionAnalysisSchema.parse({
+      level: 2,
+      reason: "เน้นครูบรรยาย",
+      evidence: [],
+      confidence: "low",
+      no_evidence: true,
+    });
+    expect(parsed.suggestions).toEqual([]);
+    expect(parsed.example).toBeNull();
+  });
+
+  it("rejects a payload that still carries code (analysis must be code-less)", () => {
+    // extra keys are stripped by default; but a wrong-typed level must fail
+    expect(() =>
+      CriterionAnalysisSchema.parse({ level: 9, reason: "x", evidence: [], confidence: "high" })
     ).toThrow();
   });
 });

@@ -78,3 +78,13 @@ export async function getPresignedUrl(
 export async function deleteObject(bucket: string, key: string): Promise<void> {
   await s3.send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
 }
+
+/** ดึงไฟล์จาก MinIO เป็น Buffer (ใช้ฝั่งเซิร์ฟเวอร์ เช่น แปลง DOCX → HTML สำหรับพรีวิว) */
+export async function getObjectBuffer(bucket: string, key: string): Promise<Buffer> {
+  const res = await s3.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+  const chunks: Uint8Array[] = [];
+  for await (const chunk of res.Body as AsyncIterable<Uint8Array>) {
+    chunks.push(chunk);
+  }
+  return Buffer.concat(chunks);
+}

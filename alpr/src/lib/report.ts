@@ -19,6 +19,8 @@ export interface AiCriterionInput {
   confidence: string;
   no_evidence: boolean;
   evidence: Array<{ quote: string; page: number | null }>;
+  suggestions?: string[];
+  example?: string | null;
 }
 
 export interface ReportData {
@@ -306,100 +308,104 @@ export async function generateReportPdf(data: ReportData): Promise<Buffer> {
   }
   cursor.y -= summaryHeight + 20;
 
-  // ── ตารางเปรียบเทียบรายองค์ประกอบ: AI เสนอ vs CAM ยืนยัน ──
+  // ── รายองค์ประกอบเชิงลึก: AI เสนอ vs CAM ยืนยัน + หลักฐาน/คำแนะนำ (flow layout) ──
+  const innerX = MARGIN_X + 16;
+  const innerW = CONTENT_W - 32;
+  const lineHeight = 12.5;
+
   for (const def of AIPACK_RUBRIC) {
     const camScore = data.criteria.find((c) => c.code === def.code);
     const aiScore = data.aiCriteria?.find((c) => c.code === def.code);
 
-    const camReasonText = camScore?.reason?.trim() || "";
-    const aiReasonText = aiScore ? aiScore.reason : "";
-
-    const lineHeight = 12.5;
-    const aiMeasure = aiReasonText
-      ? measureParagraph(aiReasonText, font, 9, lineHeight, CONTENT_W - 32)
-      : { lines: [], height: 0 };
-    const camMeasure = camReasonText
-      ? measureParagraph(camReasonText, font, 9, lineHeight, CONTENT_W - 32)
-      : { lines: [], height: 0 };
-
-    const headerRowH = 26;
-    const aiLabelH = aiScore ? 14 + aiMeasure.height + 6 : 0;
-    const camLabelH = 14 + (camMeasure.height || lineHeight) + 6;
-    const cardPadding = 16;
-    const cardHeight = headerRowH + aiLabelH + camLabelH + cardPadding;
-
-    ensureSpace(cursor, cardHeight + 12);
-    const cardTop = cursor.y;
-    drawPanel(cursor, cardHeight, { fill: WHITE, border: BORDER });
-
-    // แถบหัวข้อ + badge คะแนน
-    cursor.page.drawText(`${def.code}`, {
-      x: MARGIN_X + 14,
-      y: cardTop - 22,
-      size: 11,
-      font: bold,
-      color: PRIMARY,
-    });
+    // หัวข้อองค์ประกอบ (กันไม่ให้หัวข้อค้างท้ายหน้าเดี่ยว ๆ)
+    ensureSpace(cursor, 40);
+    cursor.y -= 4;
+    const headTop = cursor.y;
+    cursor.page.drawText(def.code, { x: MARGIN_X, y: headTop - 12, size: 11, font: bold, color: PRIMARY });
     const codeW = bold.widthOfTextAtSize(def.code, 11);
-    cursor.page.drawText(def.title, {
-      x: MARGIN_X + 14 + codeW + 8,
-      y: cardTop - 22,
-      size: 10.5,
-      font,
-      color: INK,
-    });
+    cursor.page.drawText(def.title, { x: MARGIN_X + codeW + 8, y: headTop - 12, size: 10.5, font, color: INK });
 
-    let badgeX = PAGE_W - MARGIN_X - 14;
+    // badges: CAM ยืนยัน + AI เสนอ (ชิดขวา)
+    let badgeX = PAGE_W - MARGIN_X;
     if (aiScore) {
       const label = aiScore.no_evidence ? "AI: ไม่พบหลักฐาน" : `AI เสนอ: ระดับ ${aiScore.level}`;
-      const w = bold.widthOfTextAtSize(label, 8.5) + 16;
-      badgeX -= w;
-      drawPill(cursor.page, label, badgeX, cardTop - 12, bold, 8.5, {
-        bg: PRIMARY_SOFT,
-        text: PRIMARY,
-      });
+      badgeX -= bold.widthOfTextAtSize(label, 8.5) + 16;
+      drawPill(cursor.page, label, badgeX, headTop - 2, bold, 8.5, { bg: PRIMARY_SOFT, text: PRIMARY });
       badgeX -= 6;
     }
     if (camScore) {
       const label = `CAM ยืนยัน: ระดับ ${camScore.level}`;
-      const w = bold.widthOfTextAtSize(label, 8.5) + 16;
-      badgeX -= w;
-      drawPill(cursor.page, label, badgeX, cardTop - 12, bold, 8.5, {
-        bg: SUCCESS_BG,
-        text: SUCCESS_TEXT,
-      });
+      badgeX -= bold.widthOfTextAtSize(label, 8.5) + 16;
+      drawPill(cursor.page, label, badgeX, headTop - 2, bold, 8.5, { bg: SUCCESS_BG, text: SUCCESS_TEXT });
     }
+    cursor.y = headTop - 22;
 
-    cursor.y = cardTop - headerRowH;
-
+    // เหตุผลของ AI + ความเชื่อมั่น
     if (aiScore) {
       const confLabel = CONFIDENCE_LABEL[aiScore.confidence] ?? aiScore.confidence;
-      drawLine(cursor, `เหตุผลของ AI (ความเชื่อมั่น: ${confLabel})`, {
-        size: 8.5,
-        font: bold,
-        color: MUTED,
-        x: MARGIN_X + 16,
-        advance: 13,
-      });
-      drawParagraph(cursor, aiReasonText || "-", { size: 9, x: MARGIN_X + 16, lineHeight, maxWidth: CONTENT_W - 32 });
+      ensureSpace(cursor, 13 + lineHeight);
+      drawLine(cursor, `เหตุผลของ AI (ความเชื่อมั่น: ${confLabel})`, { size: 8.5, font: bold, color: MUTED, x: innerX, advance: 13 });
+      drawParagraph(cursor, aiScore.reason || "-", { size: 9, x: innerX, lineHeight, maxWidth: innerW });
+
+      // ประโยคหลักฐาน (จุดที่ทำให้ได้ระดับนี้)
+      if (aiScore.evidence.length > 0) {
+        cursor.y -= 4;
+        ensureSpace(cursor, 13);
+        drawLine(cursor, "ประโยคหลักฐาน (จุดที่ทำให้ได้ระดับนี้)", { size: 8.5, font: bold, color: MUTED, x: innerX, advance: 13 });
+        for (const e of aiScore.evidence) {
+          const q = `“${e.quote}”${e.page ? ` (หน้า ${e.page})` : ""}`;
+          const m = measureParagraph(q, font, 8.5, 11.5, innerW - 10);
+          ensureSpace(cursor, m.height);
+          const evTop = cursor.y;
+          drawParagraph(cursor, q, { size: 8.5, x: innerX + 10, lineHeight: 11.5, maxWidth: innerW - 10, color: rgb(0.3, 0.34, 0.42) });
+          // เส้นซ้ายเน้น quote
+          cursor.page.drawRectangle({ x: innerX, y: cursor.y, width: 2, height: evTop - cursor.y, color: BORDER });
+        }
+      }
+
+      // คำแนะนำเพื่อปรับปรุง
+      if (aiScore.suggestions && aiScore.suggestions.length > 0) {
+        cursor.y -= 4;
+        ensureSpace(cursor, 13);
+        drawLine(cursor, "คำแนะนำเพื่อปรับปรุง", { size: 8.5, font: bold, color: PRIMARY, x: innerX, advance: 13 });
+        for (const s of aiScore.suggestions) {
+          const m = measureParagraph(`• ${s}`, font, 9, lineHeight, innerW - 10);
+          ensureSpace(cursor, m.height);
+          drawParagraph(cursor, `• ${s}`, { size: 9, x: innerX + 6, lineHeight, maxWidth: innerW - 6 });
+        }
+      }
+
+      // ตัวอย่างที่ดีขึ้น
+      if (aiScore.example && aiScore.example.trim()) {
+        cursor.y -= 4;
+        ensureSpace(cursor, 13);
+        drawLine(cursor, "ตัวอย่างที่ดีขึ้น", { size: 8.5, font: bold, color: SUCCESS_TEXT, x: innerX, advance: 13 });
+        const m = measureParagraph(aiScore.example, font, 9, lineHeight, innerW - 12);
+        ensureSpace(cursor, m.height + 8);
+        const exTop = cursor.y;
+        drawPanel(cursor, m.height + 8, { fill: PANEL_BG, x: innerX, width: innerW });
+        cursor.y = exTop - 5;
+        drawParagraph(cursor, aiScore.example, { size: 9, x: innerX + 6, lineHeight, maxWidth: innerW - 12, color: rgb(0.28, 0.32, 0.4) });
+        cursor.y = exTop - m.height - 8;
+      }
       cursor.y -= 6;
     }
 
-    drawLine(cursor, "เหตุผลเพิ่มเติมของ CAM", {
-      size: 8.5,
-      font: bold,
-      color: MUTED,
-      x: MARGIN_X + 16,
-      advance: 13,
-    });
-    drawParagraph(cursor, camReasonText || "— (ไม่มีบันทึกเพิ่มเติม)", {
-      size: 9,
-      x: MARGIN_X + 16,
-      lineHeight,
-      maxWidth: CONTENT_W - 32,
-    });
+    // เหตุผลเพิ่มเติมของ CAM
+    const camReasonText = camScore?.reason?.trim() || "";
+    ensureSpace(cursor, 13 + lineHeight);
+    drawLine(cursor, "เหตุผลเพิ่มเติมของ CAM", { size: 8.5, font: bold, color: MUTED, x: innerX, advance: 13 });
+    drawParagraph(cursor, camReasonText || "— (ไม่มีบันทึกเพิ่มเติม)", { size: 9, x: innerX, lineHeight, maxWidth: innerW });
 
-    cursor.y = cardTop - cardHeight - 12;
+    // เส้นคั่นระหว่างองค์ประกอบ
+    cursor.y -= 8;
+    cursor.page.drawLine({
+      start: { x: MARGIN_X, y: cursor.y },
+      end: { x: PAGE_W - MARGIN_X, y: cursor.y },
+      thickness: 0.6,
+      color: BORDER,
+    });
+    cursor.y -= 6;
   }
 
   cursor.y -= 8;

@@ -12,6 +12,8 @@ interface AiCriterion {
   evidence: Array<{ quote: string; page: number | null }>;
   confidence: string;
   no_evidence: boolean;
+  suggestions?: string[];
+  example?: string | null;
 }
 
 export function EvaluateForm({
@@ -106,12 +108,43 @@ export function EvaluateForm({
                   <b>{ai.no_evidence ? "⚠️ AI: ไม่พบหลักฐาน" : `✨ AI เสนอ ระดับ ${ai.level}`}</b>
                   {" · ความเชื่อมั่น: "}
                   <b>{ai.confidence}</b>
-                  <br />
-                  {ai.reason}
+                  <p className="mt-1">{ai.reason}</p>
+
                   {ai.evidence.length > 0 && (
-                    <div className="mt-1.5 text-xs text-muted">
-                      อ้างอิง: “{ai.evidence[0].quote}”{" "}
-                      {ai.evidence[0].page ? `(หน้า ${ai.evidence[0].page})` : ""}
+                    <div className="mt-2.5">
+                      <p className="text-xs font-semibold text-muted">
+                        📌 ประโยคหลักฐาน (จุดที่ทำให้ได้ระดับนี้)
+                      </p>
+                      <ul className="mt-1 flex flex-col gap-1">
+                        {ai.evidence.map((e, idx) => (
+                          <li
+                            key={idx}
+                            className="border-l-2 border-[#cfd3dc] pl-2 text-xs text-[#4b5162]"
+                          >
+                            “{e.quote}”{e.page ? ` (หน้า ${e.page})` : ""}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {ai.suggestions && ai.suggestions.length > 0 && (
+                    <div className="mt-2.5">
+                      <p className="text-xs font-semibold text-primary">💡 คำแนะนำเพื่อปรับปรุง</p>
+                      <ul className="mt-1 list-disc pl-5 text-xs text-[#4b5162]">
+                        {ai.suggestions.map((s, idx) => (
+                          <li key={idx}>{s}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {ai.example && (
+                    <div className="mt-2.5">
+                      <p className="text-xs font-semibold text-success">📝 ตัวอย่างที่ดีขึ้น</p>
+                      <p className="mt-1 whitespace-pre-wrap rounded-lg bg-white/70 p-2 text-xs text-[#4b5162]">
+                        {ai.example}
+                      </p>
                     </div>
                   )}
                 </div>

@@ -6,15 +6,27 @@ export const EvidenceSchema = z.object({
   page: z.number().int().nullable(),
 });
 
-/** ผลประเมิน 1 องค์ประกอบ (C1–C5) ตามเกณฑ์ AIPACK */
-export const CriterionResultSchema = z.object({
-  code: z.enum(["C1", "C2", "C3", "C4", "C5"]),
+/**
+ * ผลวิเคราะห์ 1 องค์ประกอบ (ไม่รวม code) — ใช้เป็น response ของการเรียก AI แบบราย C
+ * (per-criterion iteration): แต่ละ C ได้การวิเคราะห์เชิงลึกของตัวเอง
+ */
+export const CriterionAnalysisSchema = z.object({
   level: z.number().int().min(1).max(4),
   reason: z.string(),
   evidence: z.array(EvidenceSchema),
   confidence: z.enum(["high", "medium", "low"]),
   // ถ้า AI ไม่พบหลักฐานเพียงพอ ต้องระบุ true + level ต่ำ (ห้ามเดาคะแนนสูง)
   no_evidence: z.boolean().default(false),
+  // คำแนะนำการปรับปรุงเชิงรูปธรรม (ทำอะไรจึงจะขยับระดับขึ้น)
+  suggestions: z.array(z.string()).default([]),
+  // ตัวอย่างที่เขียนให้เห็นภาพว่าเวอร์ชันที่ดีขึ้นควรมีหน้าตาแบบไหน (อิงเนื้อหาแผนจริง)
+  example: z.string().nullable().default(null),
+});
+export type CriterionAnalysis = z.infer<typeof CriterionAnalysisSchema>;
+
+/** ผลประเมิน 1 องค์ประกอบ (C1–C5) ตามเกณฑ์ AIPACK — รวม code */
+export const CriterionResultSchema = CriterionAnalysisSchema.extend({
+  code: z.enum(["C1", "C2", "C3", "C4", "C5"]),
 });
 
 export const EvaluationResultSchema = z.object({

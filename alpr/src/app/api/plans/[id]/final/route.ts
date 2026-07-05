@@ -56,6 +56,8 @@ export async function POST(
     evidence: Array<{ quote: string; page: number | null }>;
     confidence: string;
     no_evidence: boolean;
+    suggestions?: string[];
+    example?: string | null;
   }>) || [];
   await prisma.auditLog.createMany({
     data: body.criteria.map((c) => ({
