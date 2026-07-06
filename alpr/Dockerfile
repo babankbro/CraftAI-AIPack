@@ -28,11 +28,20 @@ RUN npx prisma generate && npm run build
 FROM base AS runner
 WORKDIR /app
 ENV NODE_ENV=production
+ENV HOSTNAME=0.0.0.0
+ENV PORT=3000
+ENV NODE_ENV=production
 COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/public ./public
 COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=build /app/node_modules/prisma ./node_modules/prisma
+COPY --from=build /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=build /app/node_modules/.bin ./node_modules/.bin
+
+COPY --from=build /app/assets ./assets
+
 # @napi-rs/canvas (native addon ให้ pdfjs-dist render หน้า PDF เป็นภาพสำหรับ OCR)
 # ไม่ถูกดึงเข้า .next/standalone อัตโนมัติ เพราะ pdfjs-dist require มันแบบ dynamic/optional
 # ที่ next build's dependency tracing (node-file-trace) มองไม่เห็น — ต้อง copy เองตรง ๆ
