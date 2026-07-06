@@ -36,7 +36,6 @@ COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/public ./public
 COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/node_modules ./node_modules
-
 COPY --from=build /app/assets ./assets
 
 # @napi-rs/canvas (native addon ให้ pdfjs-dist render หน้า PDF เป็นภาพสำหรับ OCR)
